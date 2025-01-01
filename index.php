@@ -208,6 +208,65 @@ function editReg($reg_id, $fecha, $hora, $razon) {
     }
 }
 
+function aceptarCambio($cambio_id) {
+    global $conn;
+    $query ="UPDATE cambios SET estado = 1 WHERE id = ".$cambio_id."; ";
+    try {
+        if ($conn->query($query) === TRUE) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (Exception $e) {
+        echo "Error: " . $e->getMessage();
+        exit();
+    }
+}
+
+function rechazarCambio($cambio_id) {
+    global $conn;
+    $conn->begin_transaction();
+    $query = "SELECT reg_id, anterior FROM cambios WHERE id = ".$cambio_id.";";
+    try {
+        $result = $conn->query($query);
+        $row = $result->fetch_assoc();
+        $reg_id = $row['reg_id'];
+        $anterior = $row['anterior'];
+        $result->close();
+    } catch (Exception $e) {
+        echo "Error: " . $e->getMessage();
+        $conn->rollback();
+        exit();
+    }
+
+    $query = "UPDATE registros SET reg_time = '".$anterior."', modificado = NOW() WHERE reg_id = ".$reg_id.";";
+    try {
+        if ($conn->query($query) === FALSE) {
+            $conn->rollback();
+            return false;
+        }
+    } catch (Exception $e) {
+        echo "Error: " . $e->getMessage();
+        $conn->rollback();
+        exit();
+    }
+
+    $query ="UPDATE cambios SET estado = 2 WHERE id = ".$cambio_id."; ";
+    try {
+        if ($conn->query($query) === TRUE) {
+            $conn->commit();   
+            return true;
+        } else {
+            $conn->rollback();
+            return false;
+        }
+    } catch (Exception $e) {
+        echo "Error: " . $e->getMessage();
+        $conn->rollback();
+        exit();
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (isset($_POST['login'])) {
@@ -273,6 +332,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $mensaje = "Las contraseñas no coinciden o tienen menos de 6 caracteres.";
         }
         include "dashboard.php";
+    } elseif (isset($_POST['aceptar_cambio'])) {
+        if (aceptarCambio($_POST['aceptar_cambio'])) {
+            $mensaje = "Cambio aceptado.";
+        } else {
+            $mensaje = "Fallo al aceptar el cambio.";
+        }
+        include "cambios.php";
+    } elseif (isset($_POST['rechazar_cambio'])) {
+        if (rechazarCambio($_POST['rechazar_cambio'])) {
+            $mensaje = "Cambio rechazado.";
+        } else {
+            $mensaje = "Fallo al rechazar el cambio.";
+        }
+        include "cambios.php";
     } elseif (isset($_POST['logout'])) {
         session_destroy();
         include "login.php";
