@@ -1,5 +1,5 @@
 <?php
-include 'global.php';
+include_once 'global.php';
 
 if ($_SESSION['role'] == 10) {
     $query = "SELECT id FROM cambios WHERE estado = 0;";

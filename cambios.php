@@ -3,22 +3,23 @@ $titulo = "Solicitudes de cambio";
 include 'cabecera.php';
 ?>
         <form method="post" class="busca-form">
-            Filtrar busqueda por: 
-            <input type="text" name="user" placeholder="Usuario a buscar">
+            Filtrar busqueda por estado: 
+<!--             <input type="text" name="user" placeholder="Usuario a buscar"> -->
             <select name="estado">
-                <option value=""   <?php if ($_POST['estado'] == "") echo "selected"; ?>>Todos</option>
-                <option value="0"  <?php if (!isset($_POST['estado']) || $_POST['estado'] == 0) echo "selected"; ?>>Pendiente</option>
-                <option value="1"  <?php if ($_POST['estado'] == 1) echo "selected"; ?>>Aceptado</option>
-                <option value="10" <?php if ($_POST['estado'] == 10) echo "selected"; ?>>Rechazado</option>
+                <option value=""  <?php if ($_POST['estado'] == "") echo "selected"; ?>>Todos</option>
+                <option value="0" <?php if (!isset($_POST['estado']) || $_POST['estado'] == 0) echo "selected"; ?>>Pendiente</option>
+                <option value="1" <?php if ($_POST['estado'] == 1) echo "selected"; ?>>Aceptado</option>
+                <option value="2" <?php if ($_POST['estado'] == 2) echo "selected"; ?>>Rechazado</option>
             </select>
             <button type="submit" name="cambios">Filtrar</button>
         </form>
 <?php
+if (!isset($_POST['estado'])) $_POST['estado'] = "0";
 $stmt = $conn->stmt_init();
 if ($_POST['estado'] == "") {
-    $stmt->prepare("SELECT * FROM cambios;");
+    $stmt->prepare("SELECT * FROM cambios ORDER BY id DESC;");
 } else {
-    $stmt->prepare("SELECT * FROM cambios WHERE estado = ?;");
+    $stmt->prepare("SELECT * FROM cambios WHERE estado = ? ORDER BY id DESC;");
     $stmt->bind_param("i", $_POST['estado']);
 }
 $stmt->execute();

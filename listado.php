@@ -21,6 +21,7 @@ try {
     exit();
 }
 
+$stmt = $conn->stmt_init();
 $stmt->prepare("SELECT reg_time, entrada FROM registros WHERE reg_time BETWEEN ? AND ? AND user_id = ? ORDER BY reg_id ASC;");
 try {
     $stmt->bind_param("ssi", $inicio, $fin, $busca_user);

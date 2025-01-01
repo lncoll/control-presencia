@@ -1,5 +1,5 @@
 <?php
-include 'global.php';
+include_once 'global.php';
 
 if ($_SESSION['dentro']) { $cuantos = 31; } else { $cuantos = 32; };
 
