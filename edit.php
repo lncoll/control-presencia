@@ -1,22 +1,33 @@
 <?php
 if ($_POST['editame'] > 0) {
-    $user_id = $_POST['editame'];
+    $user_id = mysqli_real_escape_string($conn,  $_POST['editame']);
 } else {
     $user_id = $_SESSION['user_id'];
 }
-$stmt = $conn->stmt_init();
-$stmt->prepare("SELECT * FROM empleados WHERE user_id = ? ");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$stmt->store_result();
-if ($stmt->num_rows > 0) {
-    $stmt->bind_result($id, $username, $nombre, $password, $NIF, $email, $dentro, $role);
-    $stmt->fetch();
-} else {
-    echo "Usuario no encontrado: ". $user_id;
+
+$query = "SELECT * FROM empleados WHERE user_id = $user_id;";
+try {
+    $result = $conn->query($query);
+    if ($result->num_rows == 0) {
+        echo "Usuario no encontrado: ". $user_id;
+        $result->close();
+        exit();
+    }
+    $row = $result->fetch_assoc();
+    $id = $row['user_id'];
+    $username = $row['username'];
+    $nombre = $row['nombre'];
+    $password = $row['password'];
+    $NIF = $row['NIF'];
+    $email = $row['email'];
+    $dentro = $row['dentro'];
+    $role = $row['role'];
+    $result->close();
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage();
+    $result->close();
     exit();
 }
-
 
 $titulo = "Editar usuario";
 include 'cabecera.php';
@@ -62,3 +73,5 @@ include 'cabecera.php';
         </form>
     </body>
 </html>
+<?php
+$result->close();

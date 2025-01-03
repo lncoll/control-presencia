@@ -1,7 +1,7 @@
 <?php
 include_once 'global.php';
 
-if ($_SESSION['dentro']) { $cuantos = 31; } else { $cuantos = 32; };
+if ($_SESSION['dentro']) { $cuantos = 31; } else { $cuantos = 30; };
 
 $stmt = $conn->stmt_init();
 $stmt->prepare("SELECT * FROM registros WHERE user_id = ? ORDER BY reg_id DESC LIMIT ?;");

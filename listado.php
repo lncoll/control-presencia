@@ -2,19 +2,16 @@
 $titulo = "Listado de usuarios";
 include 'cabecera.php';
 
-if ($_POST['listar'] != "") $busca_user = $_POST['listar']; else $busca_user = $_SESSION['user_id'];
-if ($_POST['inicio'] != "") $inicio = $_POST['inicio']; else $inicio = date('Y-m-01');
-if ($_POST['fin'] != "") $fin = $_POST['fin']." 23:59:59"; else $fin = date('Y-m-t')." 23:59:59";
+if ($_POST['listar'] != "") $busca_user = mysqli_real_escape_string($conn,  $_POST['listar']); else $busca_user = $_SESSION['user_id'];
+if ($_POST['inicio'] != "") $inicio = mysqli_real_escape_string($conn,$_POST['inicio']); else $inicio = date('Y-m-01');
+if ($_POST['fin'] != "") $fin = mysqli_real_escape_string($conn,$_POST['fin']." 23:59:59"); else $fin = date('Y-m-t')." 23:59:59";
 
-$stmt = $conn->stmt_init();
-$stmt->prepare("SELECT nombre FROM empleados WHERE user_id = ?;");
+$query = "SELECT nombre FROM empleados WHERE user_id = $busca_user;";
 try {
-    $stmt->bind_param("i", $busca_user);
-    $stmt->execute();
-    $stmt->bind_result($nombre);
-    $stmt->store_result();
-    $stmt->fetch();
-    $stmt->close();
+    $result = $conn->query($query);
+    $row = $result->fetch_assoc();
+    $nombre = $row['nombre'];
+    $result->close();
 } catch (Exception $e) {
     echo "Error: " . $e->getMessage();
     $stmt->close();

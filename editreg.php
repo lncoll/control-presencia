@@ -2,18 +2,17 @@
 $titulo = "Edición de registro";
 include 'cabecera.php';
 
-$stmt = $conn->stmt_init();
-$stmt->prepare("SELECT user_id, reg_time, entrada FROM registros WHERE reg_id = ? ;");
+$query = "SELECT user_id, reg_time, entrada FROM registros WHERE reg_id = " . $_POST['editareg'] . " ;"; 
 try {
-    $stmt->bind_param("i", $_POST['editareg']);
-    $stmt->execute();
-    $stmt->bind_result($user_id, $reg_time, $entrada);
-    $stmt->store_result();
-    $stmt->fetch();
-    $stmt->close();
+    $result = $conn->query($query);
+    $row = $result->fetch_assoc();
+    $user_id = $row['user_id'];
+    $reg_time = $row['reg_time'];
+    $entrada = $row['entrada'];
+    $result->close();
 } catch (Exception $e) {
     echo "Error: " . $e->getMessage();
-    $stmt->close();
+    $result->close();
     exit();
 }
 

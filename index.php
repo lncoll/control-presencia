@@ -8,31 +8,29 @@ if (!isset($_SESSION['user_id']) && !isset($_POST['login'])) {
 
 function login($username, $password) {
     global $conn;
+    $use = mysqli_real_escape_string($conn, $username);
+    $pas = mysqli_real_escape_string($conn, $password);
     try {
-        $stmt = $conn->stmt_init();
-        $stmt->prepare("SELECT * FROM empleados WHERE username = ? AND password = PASSWORD(?) AND role > 0");
-        $stmt->bind_param("ss", $username, $password);
-        $stmt->execute();
-        $stmt->store_result();
-        $stmt->bind_result($user_id, $username, $nombre, $password, $NIF, $email, $dentro, $role);
-        if ($stmt->num_rows > 0) {
-            $stmt->fetch();
-            $_SESSION['user_id'] = $user_id;
-            $_SESSION['role'] = $role;
-            $_SESSION['NIF'] = $NIF;
-            $_SESSION['email'] = $email;
-            $_SESSION['username'] = $username;
-            $_SESSION['nombre'] = $nombre;
-            $_SESSION['dentro'] = $dentro;
-            $stmt->close();
+        $query = "SELECT * FROM `empleados` WHERE `username` = '$use' AND `password` = PASSWORD('$pas') AND `role` > 0;";
+        $result = $conn->query($query);
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $_SESSION['user_id'] = $row['user_id'];
+            $_SESSION['role'] = $row['role'];
+            $_SESSION['NIF'] = $row['NIF'];
+            $_SESSION['email'] = $row['email'];
+            $_SESSION['username'] = $row['username'];
+            $_SESSION['nombre'] = $row['nombre'];
+            $_SESSION['dentro'] = $row['dentro'];
+            $result->close();
             return true;
         } else {
-            $stmt->close();
+            $result->close();
             return false;
         }
     } catch (Exception $e) {
         echo "Error: " . $e->getMessage();
-        $stmt->close();
+        $result->close();
         exit();
     }
 }
@@ -44,23 +42,25 @@ function registerEntry($user_id) {
         exit();
     }
     try {
-        $stmt = $conn->stmt_init();
-        $stmt->prepare("INSERT INTO registros (user_id, reg_time, entrada, creado) VALUES (?, NOW(), TRUE, NOW())");
-        $stmt->bind_param("i", $user_id);
-        if ($stmt->execute()) {
-            $stmt->prepare("UPDATE empleados SET dentro = 1 WHERE user_id = ?");
-            $stmt->bind_param("i", $user_id);
-            $stmt->execute();
-            $_SESSION['dentro'] = true;
-            $stmt->close();
-            return true;
+        $conn->begin_transaction();
+        $query = "INSERT INTO registros (user_id, reg_time, entrada, creado) VALUES ($user_id, NOW(), TRUE, NOW())";
+        if ($conn->query($query) === TRUE) {
+            $query = "UPDATE empleados SET dentro = 1 WHERE user_id = $user_id";
+            if ($conn->query($query) === TRUE) {
+                $_SESSION['dentro'] = true;
+                $conn->commit();
+                return true;
+            } else {
+                $conn->rollback();
+                return false;
+            }
         } else {
-            $stmt->close();
+            $conn->rollback();
             return false;
         }
     } catch (Exception $e) {
         echo "Error: " . $e->getMessage();
-        $stmt->close();
+        $conn->rollback();
         exit();
     }
 }
@@ -72,43 +72,48 @@ function registerExit($user_id) {
         exit();
     }
     try {
-        $stmt = $conn->stmt_init();
-        $stmt->prepare("INSERT INTO registros (user_id, reg_time, entrada, creado) VALUES (?, NOW(), FALSE, NOW())");
-        $stmt->bind_param("i", $user_id);
-        if ($stmt->execute()) {
-            $stmt->prepare("UPDATE empleados SET dentro = 0 WHERE user_id = ?");
-            $stmt->bind_param("i", $user_id);
-            $stmt->execute();
-            $_SESSION['dentro'] = false;
-            $stmt->close();
-            return true;
+        $conn->begin_transaction();
+        $query = "INSERT INTO registros (user_id, reg_time, entrada, creado) VALUES ($user_id, NOW(), FALSE, NOW())";
+        if ($conn->query($query) === TRUE) {
+            $query = "UPDATE empleados SET dentro = 0 WHERE user_id = $user_id";
+            if ($conn->query($query) === TRUE) {
+                $_SESSION['dentro'] = false;
+                $conn->commit();
+                return true;
+            } else {
+                $conn->rollback();
+                return false;
+            }
         } else {
-            $stmt->close();
+            $conn->rollback();
             return false;
         }
     } catch (Exception $e) {
         echo "Error: " . $e->getMessage();
-        $stmt->close();
+        $conn->rollback();
         exit();
     }
 }
 
 function createEmployee($username, $nombre, $password, $nif, $email, $role) {
     global $conn;
+
+    $username = mysqli_real_escape_string($conn, $username);
+    $nombre = mysqli_real_escape_string($conn, $nombre);
+    $password = mysqli_real_escape_string($conn, $password);
+    $nif = mysqli_real_escape_string($conn, $nif);
+    $email = mysqli_real_escape_string($conn, $email);
+    $role = mysqli_real_escape_string($conn, $role);
+
     try {
-        $stmt = $conn->stmt_init();
-        $stmt->prepare("INSERT INTO empleados (username, nombre, password, NIF, email, dentro, role) VALUES (?, ?, PASSWORD(?), ?, ?, 0, ?)");
-        $stmt->bind_param("sssssi", $username, $nombre, $password, $nif, $email, $role);
-        if ($stmt->execute()) {
-            $stmt->close();
+        $query = "INSERT INTO empleados (username, nombre, password, NIF, email, dentro, role) VALUES ('$username', '$nombre', PASSWORD('$password'), '$nif', '$email', 0, $role)";
+        if ($conn->query($query) === TRUE) {
             return true;
         } else {
-            $stmt->close();
             return false;
         }
     } catch (Exception $e) {
         echo "Error: " . $e->getMessage();
-        $stmt->close();
         print_r($_POST);
         exit();
     }
@@ -116,94 +121,93 @@ function createEmployee($username, $nombre, $password, $nif, $email, $role) {
 
 function editEmployee($user_id, $username, $nombre, $nif, $email, $role) {
     global $conn;
+
+    $user_id = mysqli_real_escape_string($conn, $user_id);
+    $username = mysqli_real_escape_string($conn, $username);
+    $nombre = mysqli_real_escape_string($conn, $nombre);
+    $nif = mysqli_real_escape_string($conn, $nif);
+    $email = mysqli_real_escape_string($conn, $email);
+    $role = mysqli_real_escape_string($conn, $role);
+
     try {
-        $stmt = $conn->stmt_init();
-        $stmt->prepare("UPDATE empleados SET username = ?, nombre = ?, NIF = ?, email = ?, role = ? WHERE user_id = ?");
-        $stmt->bind_param("sssssi", $username, $nombre, $nif, $email, $role, $user_id);
-        if ($stmt->execute()) {
-            $stmt->close();
+        $query = "UPDATE empleados SET username = '$username', nombre = '$nombre', NIF = '$nif', email = '$email', role = '$role' WHERE user_id = $user_id";
+        if ($conn->query($query) === TRUE) {
             return true;
         } else {
-            $stmt->close();
             return false;
         }
     } catch (Exception $e) {
         echo "Error: " . $e->getMessage();
-        $stmt->close();
         exit();
     }
 }
 
 function editPassword($user_id, $password1, $password2) {
     global $conn;
+
     if (($password1 != $password2) || (strlen($password1) < 6)) {
         return false;
     }
+
+    $user_id = mysqli_real_escape_string($conn, $user_id);
+    $password1 = mysqli_real_escape_string($conn, $password1);
+    $password2 = mysqli_real_escape_string($conn, $password2);
+
     try {
-        $stmt = $conn->stmt_init();
-        $stmt->prepare("UPDATE empleados SET password = PASSWORD(?) WHERE user_id = ?");
-        $stmt->bind_param("si", $password1,  $user_id);
-        if ($stmt->execute()) {
-            $stmt->close();
+        $query = "UPDATE empleados SET password = PASSWORD('$password1') WHERE user_id = $user_id";
+        if ($conn->query($query) === TRUE) {
             return true;
         } else {
-            $stmt->close();
             return false;
         }
     } catch (Exception $e) {
         echo "Error: " . $e->getMessage();
-        $stmt->close();
         exit();
     }
 }
 
 function editReg($reg_id, $fecha, $hora, $razon) {
     global $conn;
+    
     $newtime = new DateTime($fecha . " " . $hora);
     $posterior = $newtime->format("Y-m-d H:i");
-    $conn->begin_transaction();
+    $reg_id = mysqli_real_escape_string($conn, $reg_id);
+    $razon = mysqli_real_escape_string($conn, $razon);
 
     try {
-        $stmt = $conn->stmt_init();
-        $stmt->prepare("SELECT user_id, reg_time FROM registros WHERE reg_id = ?");
-        $stmt->bind_param("i", $reg_id);
-        $stmt->execute();
-        $stmt->bind_result($user_id, $anterior);
-        $stmt->store_result();
-        $stmt->fetch();
-        if ($_SESSION['user_id'] != $user_id) {
-            $stmt->close();
+        $conn->begin_transaction();
+        $quey = "SELECT user_id, reg_time FROM registros WHERE reg_id = $reg_id";
+        $result = $conn->query($quey);
+        $row = $result->fetch_assoc();
+        if ($_SESSION['user_id'] != $row['user_id']) {
+            $result->close();
             return false;
         }
+        $anterior = $row['reg_time'];
     } catch (Exception $e) {
-        $stmt->close();
+        $result->close();
         $conn->rollback();
         echo "Error: " . $e->getMessage();
         exit();
     }
-    $stmt->close();
 
     try {
-        $stmt = $conn->stmt_init();
-        $stmt->prepare("INSERT INTO cambios (reg_id, user_id, estado, anterior, posterior, comentario) VALUES (?, ?, 0, ?, ?, ?)");
-        $stmt->bind_param("iisss", $reg_id, $_SESSION['user_id'], $anterior, $posterior, $razon);
-        if ($stmt->execute() && $stmt->affected_rows > 0) {
-            $stmt->close();
-            $stmt = $conn->stmt_init();
-            $stmt->prepare("UPDATE registros SET reg_time = ?, modificado = NOW() WHERE reg_id = ?");
-            $stmt->bind_param("si", $posterior,$reg_id);
-            $stmt->execute();
-            $stmt->close();
-            $conn->commit();
-            return true;
+        $query = "INSERT INTO cambios (reg_id, user_id, estado, anterior, posterior, comentario) VALUES ($reg_id, " . $_SESSION['user_id'] . ", 0, '$anterior', '$posterior', '$razon')";
+        if ($conn->query($query) === TRUE) {
+            $query = "UPDATE registros SET reg_time = '$posterior', modificado = NOW() WHERE reg_id = $reg_id";
+            if ($conn->query($query) === TRUE) {
+                $conn->commit();
+                return true;
+            } else {
+                $conn->rollback();
+                return false;
+            }
         } else {
-            $stmt->close();
             $conn->rollback();
             return false;
         }
     } catch (Exception $e) {
         echo "Error: " . $e->getMessage();
-        $stmt->close();
         exit();
     }
 }
@@ -239,7 +243,7 @@ function rechazarCambio($cambio_id) {
         exit();
     }
 
-    $query = "UPDATE registros SET reg_time = '".$anterior."', modificado = NOW() WHERE reg_id = ".$reg_id.";";
+    $query = "UPDATE registros SET reg_time = '$anterior', modificado = NOW() WHERE reg_id = $reg_id;";
     try {
         if ($conn->query($query) === FALSE) {
             $conn->rollback();
