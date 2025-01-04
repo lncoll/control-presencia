@@ -8,7 +8,7 @@ Esta aplicación permite gestionar y controlar la presencia de los empleados en 
 - Generación de informes de asistencia.
 - Solicitud de corrección de registros.
 - Solo PHP sin Javascript, ligero y rápido.
-- Aplicación sencill para empresas pequeñas y acceso desde la red local.
+- Aplicación sencilla para empresas pequeñas y acceso desde la red local.
 
 ## Requisitos
 
