@@ -1,3 +1,5 @@
-Backup
-.vscode
+Backup/
+.vscode/
+config.php
+.gitignore
 
