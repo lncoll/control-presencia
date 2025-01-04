@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>EMACO</title>
+        <title><?= $nombreempresa ?></title>
         <link href="estilo.css" rel="stylesheet" type="text/css">
         <style> body { display: flex; } </style>
     </head>
@@ -12,7 +12,7 @@
 <?php
 if (isset($mensaje)) echo "        <h2 id='mensaje'>" . $mensaje . "</h2><br />";
 ?>
-            <h2>EMACO</h2>
+            <h2><?= $nombreempresa ?></h2>
             <label for="username">Usuario</label>
             <input type="text" name="username" placeholder="Username" required>
             <label for="password">Contraseña</label>

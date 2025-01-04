@@ -2,9 +2,10 @@
 include_once 'global.php';
 
 if ($_SESSION['role'] == 10) {
-    $query = "SELECT id FROM cambios WHERE estado = 0;";
+    $query = "SELECT count(*) FROM cambios WHERE estado = 0;";
     $result = $conn->query($query);
-    $pendientes = $result->num_rows;
+    $row = $result->fetch_row();
+    $pendientes = $row[0];
 }
 ?>
 <!DOCTYPE html>
