@@ -10,9 +10,8 @@ try {
     $stmt->execute();
     $stmt->store_result();
 } catch (Exception $e) {
-    echo "Error: " . $e->getMessage();
+    $mensaje = "Error: " . $e->getMessage();
     $stmt->close();
-    exit();
 }
 
 $titulo = "Dashboard";

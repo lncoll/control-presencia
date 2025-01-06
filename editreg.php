@@ -1,7 +1,4 @@
 <?php
-$titulo = "Edición de registro";
-include 'cabecera.php';
-
 $query = "SELECT user_id, reg_time, entrada FROM registros WHERE reg_id = " . $_POST['editareg'] . " ;"; 
 try {
     $result = $conn->query($query);
@@ -11,9 +8,8 @@ try {
     $entrada = $row['entrada'];
     $result->close();
 } catch (Exception $e) {
-    echo "Error: " . $e->getMessage();
+    $message = "Error: " . $e->getMessage();
     $result->close();
-    exit();
 }
 
 if ($_SESSION['user_id'] != $user_id) {
@@ -21,6 +17,9 @@ if ($_SESSION['user_id'] != $user_id) {
     include 'dashboard.php';
     exit();
 }
+
+$titulo = "Edición de registro";
+include 'cabecera.php';
 
 $momento = new DateTime($reg_time);
 $fecha = $momento->format('Y-m-d');

@@ -1,8 +1,5 @@
 <?php
 // Purpose: List all users in the database
-$titulo = "Listado de usuarios";
-include 'cabecera.php';
-
 if ($_POST['users'] == "") $busca_nombre = "%"; else $busca_nombre = "%".$_POST['users']."%";
 
 try {
@@ -18,10 +15,13 @@ try {
     $stmt->bind_result($user_id, $username, $nombre);
     $stmt->store_result();
 } catch (Exception $e) {
-    echo "Error: " . $e->getMessage();
+    $mensaje = "Error: " . $e->getMessage();
     $stmt->close();
-    exit();
 }
+
+$titulo = "Listado de usuarios";
+include 'cabecera.php';
+
 ?>
         <form method="post" class="busca-form">
             Filtrar busqueda por: 

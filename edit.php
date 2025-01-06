@@ -24,9 +24,7 @@ try {
     $role = $row['role'];
     $result->close();
 } catch (Exception $e) {
-    echo "Error: " . $e->getMessage();
-    $result->close();
-    exit();
+    $mensaje = "Error: " . $e->getMessage();
 }
 
 $titulo = "Editar usuario";
@@ -60,14 +58,19 @@ include 'cabecera.php';
         </form>
         <br />
         <form method="post" class="login-form">
-            <input type="hidden" name="password0" value="<?= $password ?>">
+<?php 
+if ($_SESSION['role'] < 10 || $id == $_SESSION['user_id']) {
+    echo "            <label for='password'>Contraseña actual</label>\n";
+    echo "            <input type='password' name='password0' placeholder='********' required>\n";
+}
+?>
             <input type="hidden" name="user_id" value="<?= $id ?>">
 
-            <label for="password">Contraseña</label>
-            <input type="password" name="password1" placeholder="Password" required>
+            <label for="password">Nueva contraseña</label>
+            <input type="password" name="password1" placeholder="********" required>
 
             <label for="password2">Repetir contraseña</label>
-            <input type="password" name="password2" placeholder="Password" required>
+            <input type="password" name="password2" placeholder="********" required>
 
             <button type="submit" name="edit_password">Cambiar Contraseña</button>
         </form>

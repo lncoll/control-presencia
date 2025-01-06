@@ -13,9 +13,8 @@ try {
     $nombre = $row['nombre'];
     $result->close();
 } catch (Exception $e) {
-    echo "Error: " . $e->getMessage();
+    $mensaje = "Error: " . $e->getMessage();
     $stmt->close();
-    exit();
 }
 
 $stmt = $conn->stmt_init();
@@ -26,9 +25,8 @@ try {
     $stmt->bind_result($reg_time, $entrada);
     $stmt->store_result();
 } catch (Exception $e) {
-    echo "Error: " . $e->getMessage();
+    $mensaje .= "Error: " . $e->getMessage();
     $stmt->close();
-    exit();
 }
 ?>
         <form method="post" class="busca-form">
