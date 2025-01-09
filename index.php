@@ -45,9 +45,11 @@ function registerEntry($user_id) {
         include "dashboard.php";
         exit();
     }
+    $hora = new DateTime('now');
+    $hora = $hora->format("Y-m-d H:i");
     try {
         $conn->begin_transaction();
-        $query = "INSERT INTO registros (user_id, reg_time, entrada, creado) VALUES ($user_id, NOW(), TRUE, NOW())";
+        $query = "INSERT INTO registros (user_id, reg_time, entrada, creado) VALUES ($user_id, '$hora', TRUE, NOW())";
         if ($conn->query($query) === TRUE) {
             $query = "UPDATE empleados SET dentro = 1 WHERE user_id = $user_id";
             if ($conn->query($query) === TRUE) {
@@ -77,9 +79,11 @@ function registerExit($user_id) {
         include "dashboard.php";
         exit();
     }
+    $hora = new DateTime('now');
+    $hora = $hora->format("Y-m-d H:i");
     try {
         $conn->begin_transaction();
-        $query = "INSERT INTO registros (user_id, reg_time, entrada, creado) VALUES ($user_id, NOW(), FALSE, NOW())";
+        $query = "INSERT INTO registros (user_id, reg_time, entrada, creado) VALUES ($user_id, '$hora', FALSE, NOW())";
         if ($conn->query($query) === TRUE) {
             $query = "UPDATE empleados SET dentro = 0 WHERE user_id = $user_id";
             if ($conn->query($query) === TRUE) {
@@ -447,6 +451,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         include "listusers.php";
     } elseif (isset($_POST['listar'])) {
         include "listado.php";
+    } elseif (isset($_POST['pdf'])) {
+        include "listadopdf.php";
     }elseif (isset($_POST['editareg'])) {
         include "editreg.php";
     }elseif (isset($_POST['cambios'])) {

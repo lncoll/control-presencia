@@ -7,12 +7,13 @@ Esta aplicación permite gestionar y controlar la presencia de los empleados en 
 - Registro de entrada y salida de empleados.
 - Generación de informes de asistencia.
 - Solicitud de corrección de registros.
+- Listados por usuario, tanto en html como en pdf.
 - Solo PHP sin Javascript, ligero y rápido.
 - Aplicación sencilla para empresas pequeñas y acceso desde la red local.
 
 ## Requisitos
 
-- PHP 7.4 o superior
+- PHP 8.0 o superior
 - Servidor web Apache o Nginx
 - Base de datos MariaDB/MySQL
 
@@ -28,8 +29,7 @@ Esta aplicación permite gestionar y controlar la presencia de los empleados en 
 
 ## Uso
 
-1. 
-    Acceder a la url configurada
+1. Acceder a la url configurada
 
 ## ToDo
 1. Implementar un sencillo servicio de mensajería.

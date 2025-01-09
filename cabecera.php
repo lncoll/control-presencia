@@ -23,8 +23,8 @@ if ($_SESSION['role'] == 10) {
 <?php
 if ($_SESSION['role'] == 10) {
 
-    echo "                <button type = submit name = crear>Crear usuario</button>\n
-                <button type = submit name = users>Usuarios</button>\n
+    echo "                <button type = submit name = crear>Crear usuario</button>
+                <button type = submit name = users>Usuarios</button>
                 <button type = submit name = cambios>Solicitudes de cambio ".$pendientes."</button>\n";
 }
 ?>

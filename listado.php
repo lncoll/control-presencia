@@ -1,10 +1,10 @@
 <?php
-$titulo = "Listado de usuarios";
-include 'cabecera.php';
-
 if ($_POST['listar'] != "") $busca_user = mysqli_real_escape_string($conn,  $_POST['listar']); else $busca_user = $_SESSION['user_id'];
 if ($_POST['inicio'] != "") $inicio = mysqli_real_escape_string($conn,$_POST['inicio']); else $inicio = date('Y-m-01');
 if ($_POST['fin'] != "") $fin = mysqli_real_escape_string($conn,$_POST['fin']." 23:59:59"); else $fin = date('Y-m-t')." 23:59:59";
+
+$titulo = "Listado de usuarios";
+include 'cabecera.php';
 
 $query = "SELECT nombre FROM empleados WHERE user_id = $busca_user;";
 try {
@@ -35,6 +35,7 @@ try {
             <label for="fin">Fin</label>
             <input type="date" name="fin" value="<?= substr($fin, 0, 10) ?>" required>
             <button type="submit" name="listar" value="<?= $busca_user ?>">Filtrar</button>
+            <button type="submit" name="pdf" value="<?= $busca_user ?>">pdf</button>
         </form>
         <table class="tlistado">
             <caption>Registros para: <?= $nombre ?></caption>
@@ -61,5 +62,6 @@ try {
             $stmt->close();
             ?>
         </table>
+<?php print_r($_POST); ?>
     </body>
 </html>

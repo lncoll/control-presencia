@@ -21,7 +21,6 @@ try {
 
 $titulo = "Listado de usuarios";
 include 'cabecera.php';
-
 ?>
         <form method="post" class="busca-form">
             Filtrar busqueda por: 
