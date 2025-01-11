@@ -14,6 +14,7 @@ if (isset($_POST['crearconfig'])) {
     $dbuser = $_POST['dbuser'];
     $dbname = $_POST['dbname'];
     $nombreempresa = $_POST['nombreempresa'];
+    $nifempresa = $_POST['nifempresa'];
     $username = $_POST['username'];
     $nombre = $_POST['nombre'];
     $NIF = $_POST['NIF'];
@@ -23,6 +24,7 @@ if (isset($_POST['crearconfig'])) {
     $dbuser = "";
     $dbname = "";
     $nombreempresa = "";
+    $nifempresa = "";
     $username = "";
     $nombre = "";
     $NIF = "";
@@ -43,6 +45,8 @@ if (isset($_POST['crearconfig'])) {
             <h2>Empresa</h2>
             <label for="nombreempresa">Nombre</label>
             <input type="text" name="nombreempresa" value="<?= $nombreempresa ?>" required>
+            <label for="nifempresa">Nombre</label>
+            <input type="text" name="nifempresa" value="<?= $nifempresa ?>" required>
             <hr>
             <h2>Crear Administrador</h2>
             <input type="hidden" name="role" value="10">

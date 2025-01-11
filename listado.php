@@ -1,7 +1,11 @@
 <?php
 if ($_POST['listar'] != "") $busca_user = mysqli_real_escape_string($conn,  $_POST['listar']); else $busca_user = $_SESSION['user_id'];
-if ($_POST['inicio'] != "") $inicio = mysqli_real_escape_string($conn,$_POST['inicio']); else $inicio = date('Y-m-01');
-if ($_POST['fin'] != "") $fin = mysqli_real_escape_string($conn,$_POST['fin']." 23:59:59"); else $fin = date('Y-m-t')." 23:59:59";
+if ($_POST['mes'] != "") $mes = mysqli_real_escape_string($conn,$_POST['mes']); else $mes = date('Y-m');
+$inicio = $mes."-01";
+$fin = DateTime::createFromFormat('Y-m-d', $inicio);
+$fin->modify('last day of this month');
+$fin = $fin->format('Y-m-d') . " 23:59:59";
+//if ($_POST['fin'] != "") $fin = mysqli_real_escape_string($conn,$_POST['fin']." 23:59:59"); else $fin = date('Y-m-t')." 23:59:59";
 
 $titulo = "Listado de usuarios";
 include 'cabecera.php';
@@ -30,10 +34,8 @@ try {
 }
 ?>
         <form method="post" class="busca-form">
-            <label for="inicio">Inicio</label>
-            <input type="date" name="inicio" value="<?= $inicio ?>" required>
-            <label for="fin">Fin</label>
-            <input type="date" name="fin" value="<?= substr($fin, 0, 10) ?>" required>
+            <label for="mes">Mes</label>
+            <input type="month" name="mes" value="<?= $mes ?>" required>
             <button type="submit" name="listar" value="<?= $busca_user ?>">Filtrar</button>
             <button type="submit" name="pdf" value="<?= $busca_user ?>">pdf</button>
         </form>
@@ -62,6 +64,5 @@ try {
             $stmt->close();
             ?>
         </table>
-<?php print_r($_POST); ?>
     </body>
 </html>

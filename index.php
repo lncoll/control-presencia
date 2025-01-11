@@ -208,20 +208,44 @@ function editReg($reg_id, $fecha, $hora, $razon) {
     global $mensaje;
     
     $newtime = new DateTime($fecha . " " . $hora);
-    $posterior = $newtime->format("Y-m-d H:i");
+    $nuevotiempo = $newtime->format("Y-m-d H:i");
     $reg_id = mysqli_real_escape_string($conn, $reg_id);
     $razon = mysqli_real_escape_string($conn, $razon);
 
     try {
         $conn->begin_transaction();
-        $quey = "SELECT user_id, reg_time FROM registros WHERE reg_id = $reg_id";
-        $result = $conn->query($quey);
+        $query = "SELECT user_id, reg_time FROM registros WHERE reg_id = $reg_id";
+        $result = $conn->query($query);
         $row = $result->fetch_assoc();
         if ($_SESSION['user_id'] != $row['user_id']) {
+            $mensaje = "No puedes modificar registros de otros usuarios.";
             $result->close();
             return false;
         }
+        $tiempoviejo = $row['reg_time'];
+    } catch (Exception $e) {
+        $mensaje = "Error: " . $e->getMessage();
+        $conn->rollback();
+        return false;
+    }
+// comprobar si la nueva hora solapa con periodo anterior o posterior
+    $old = strtotime($tiempoviejo);
+    $new = strtotime($nuevotiempo  );
+    if ($old < $new) {
+        $query = "SELECT reg_id, reg_time FROM registros WHERE user_id = " . $row['user_id'] . " AND reg_time BETWEEN '$tiempoviejo' AND '$nuevotiempo' ORDER BY reg_time ASC";
+    } else {
+        $query = "SELECT reg_id, reg_time FROM registros WHERE user_id = " . $row['user_id'] . " AND reg_time BETWEEN '$nuevotiempo' AND '$tiempoviejo' ORDER BY reg_time ASC";
+    }
+    try {
+        $result = $conn->query($query);
+        if ($result->num_rows > 0) {
+            $mensaje = "La nueva hora solapa con un periodo anterior o posterior.";
+            $result->close();
+            $conn->rollback();
+            return false;
+        }
         $anterior = $row['reg_time'];
+        $result->close();
     } catch (Exception $e) {
         $mensaje = "Error: " . $e->getMessage();
         $conn->rollback();
@@ -229,9 +253,9 @@ function editReg($reg_id, $fecha, $hora, $razon) {
     }
 
     try {
-        $query = "INSERT INTO cambios (reg_id, user_id, estado, anterior, posterior, comentario) VALUES ($reg_id, " . $_SESSION['user_id'] . ", 0, '$anterior', '$posterior', '$razon')";
+        $query = "INSERT INTO cambios (reg_id, user_id, estado, anterior, posterior, comentario) VALUES ($reg_id, " . $_SESSION['user_id'] . ", 0, '$tiempoviejo', '$nuevotiempo', '$razon')";
         if ($conn->query($query) === TRUE) {
-            $query = "UPDATE registros SET reg_time = '$posterior', modificado = NOW() WHERE reg_id = $reg_id";
+            $query = "UPDATE registros SET reg_time = '$nuevotiempo', modificado = NOW() WHERE reg_id = $reg_id";
             if ($conn->query($query) === TRUE) {
                 $conn->commit();
                 return true;
@@ -322,6 +346,7 @@ function crearconfiguracion(){
     $dbpass = $_POST['dbpass'];
     $dbname = $_POST['dbname'];
     $nombreempresa = $_POST['nombreempresa'];
+    $nifempresa = $_POST['nifempresa'];
 
     if (strlen($_POST['password']) < 8 || $_POST['password'] != $_POST['password2']) {
         $mensaje = "Las contraseñas no coinciden o tienen menos de 8 caracteres.";
@@ -355,6 +380,7 @@ function crearconfiguracion(){
         fwrite($fichero, "\$dbpass = '$dbpass';\n");
         fwrite($fichero, "\$dbname = '$dbname';\n");
         fwrite($fichero, "\$nombreempresa = '$nombreempresa';\n");
+        fwrite($fichero, "\$nifempresa = '$nifempresa';\n");
         fclose($fichero);
         $mensaje = " Configuración guardada, ";
     } catch (Exception $e) {
@@ -437,9 +463,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }elseif (isset($_POST['modifica'])) {
         if (editReg($_POST['modifica'], $_POST['fecha'], $_POST['hora'], $_POST['razon'])) {
             $mensaje = "Registro modificado, a espera de validación.";
-        } else {
+        } /* else {
             $mensaje = "Fallo al modificar el registro.";
-        }
+        } */
         include "dashboard.php";
     } elseif (isset($_POST['dashboard'])) {
         include "dashboard.php";
