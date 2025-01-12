@@ -228,18 +228,28 @@ function editReg($reg_id, $fecha, $hora, $razon) {
         $conn->rollback();
         return false;
     }
+
+// comprobar que la nueva fecha no esté en el futuro
+    $new = strtotime($nuevotiempo  );
+    if ($new > time()) {
+        $mensaje = "No puedes seleccionar un momento futuro.";
+        $conn->rollback();
+        return false;
+    }
+
 // comprobar si la nueva hora solapa con periodo anterior o posterior
     $old = strtotime($tiempoviejo);
-    $new = strtotime($nuevotiempo  );
     if ($old < $new) {
         $query = "SELECT reg_id, reg_time FROM registros WHERE user_id = " . $row['user_id'] . " AND reg_time BETWEEN '$tiempoviejo' AND '$nuevotiempo' ORDER BY reg_time ASC";
+        $periodo = "posterior";
     } else {
         $query = "SELECT reg_id, reg_time FROM registros WHERE user_id = " . $row['user_id'] . " AND reg_time BETWEEN '$nuevotiempo' AND '$tiempoviejo' ORDER BY reg_time ASC";
+        $periodo = "anterior";
     }
     try {
         $result = $conn->query($query);
         if ($result->num_rows > 0) {
-            $mensaje = "La nueva hora solapa con un periodo anterior o posterior.";
+            $mensaje = "La nueva hora solapa con un periodo " . $periodo;
             $result->close();
             $conn->rollback();
             return false;
