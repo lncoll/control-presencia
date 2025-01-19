@@ -24,8 +24,12 @@ if ($_SESSION['role'] == 10) {
 if ($_SESSION['role'] == 10) {
 
     echo "                <button type = submit name = crear>Crear usuario</button>
-                <button type = submit name = users>Usuarios</button>
-                <button type = submit name = cambios>Solicitudes de cambio ".$pendientes."</button>\n";
+                <button type = submit name = users>Usuarios</button>\n";
+    if ($pendientes) {
+        echo "                <button type = submit name = cambios>Solicitudes de cambio ".$pendientes." <img src=img/aviso.gif width='16'></button>\n";
+    } else {
+        echo "                <button type = submit name = cambios>Solicitudes de cambio</button>\n";
+    }
 }
 ?>
                 <button type = submit name = editame>Mis datos</button>

@@ -290,15 +290,47 @@ function aceptarCambio($cambio_id) {
     global $conn;
     global $mensaje;
 
-    $query ="UPDATE cambios SET estado = 1 WHERE id = ".$cambio_id."; ";
+    $conn->begin_transaction();
+    $query = "SELECT user_id, reg_id, posterior FROM cambios WHERE id = $cambio_id;";
     try {
-        if ($conn->query($query) === TRUE) {
-            return true;
-        } else {
+        $result = $conn->query($query);
+        $row = $result->fetch_assoc();
+        $user_id = $row['user_id'];
+        $reg_id = $row['reg_id'];
+        $posterior = $row['posterior'];
+        $result->close();
+    } catch (Exception $e) {
+        $mensaje = "Error: " . $e->getMessage();
+        $conn->rollback();
+        return false;
+    }
+
+    $query = "INSERT INTO mensajes (de, para, texto) VALUES (".$_SESSION['user_id'].", $user_id, 'Tu solicitud de cambio de registro a las $posterior ha sido aceptado.');";
+    try {
+        if ($conn->query($query) === FALSE) {
+            $mensaje = "Ha fallado la aceptación del cambio.";
+            $conn->rollback();
             return false;
         }
     } catch (Exception $e) {
         $mensaje = "Error: " . $e->getMessage();
+        $conn->rollback();
+        return false;
+    }
+
+    $query ="UPDATE cambios SET estado = 1 WHERE id = ".$cambio_id."; ";
+    try {
+        if ($conn->query($query) === TRUE) {
+            $mensaje = "Cambio aceptado.";
+            $conn->commit();
+            return true;
+        } else {
+            $conn->rollback();
+            return false;
+        }
+    } catch (Exception $e) {
+        $mensaje = "Error: " . $e->getMessage();
+        $conn->rollback();
         return false;
     }
 }
@@ -308,13 +340,28 @@ function rechazarCambio($cambio_id) {
     global $mensaje;
 
     $conn->begin_transaction();
-    $query = "SELECT reg_id, anterior FROM cambios WHERE id = ".$cambio_id.";";
+    $query = "SELECT user_id, reg_id, anterior, posterior FROM cambios WHERE id = $cambio_id;";
     try {
         $result = $conn->query($query);
         $row = $result->fetch_assoc();
+        $user_id = $row['user_id'];
         $reg_id = $row['reg_id'];
-        $anterior = $row['anterior'];
+        $posterior = $row['posterior'];
+        $anterior = $row["anterior"];
         $result->close();
+    } catch (Exception $e) {
+        $mensaje = "Error: " . $e->getMessage();
+        $conn->rollback();
+        return false;
+    }
+
+    $query = "INSERT INTO mensajes (de, para, texto) VALUES (".$_SESSION['user_id'].", $user_id, 'Tu solicitud de cambio de registro a las $posterior ha sido rechazado.');";
+    try {
+        if ($conn->query($query) === FALSE) {
+            $mensaje = "Ha fallado el rechazo del cambio.";
+            $conn->rollback();
+            return false;
+        }
     } catch (Exception $e) {
         $mensaje = "Error: " . $e->getMessage();
         $conn->rollback();
@@ -324,6 +371,7 @@ function rechazarCambio($cambio_id) {
     $query = "UPDATE registros SET reg_time = '$anterior', modificado = NOW() WHERE reg_id = $reg_id;";
     try {
         if ($conn->query($query) === FALSE) {
+            $mensaje = "Ha fallado el rechazo del cambio.";
             $conn->rollback();
             return false;
         }
@@ -337,8 +385,10 @@ function rechazarCambio($cambio_id) {
     try {
         if ($conn->query($query) === TRUE) {
             $conn->commit();   
+            $mensaje = "Cambio rechazado.";
             return true;
         } else {
+            $mensaje = "Ha fallado el rechazo del cambio.";
             $conn->rollback();
             return false;
         }
@@ -520,18 +570,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         include "dashboard.php";
     } elseif (isset($_POST['aceptar_cambio'])) {
-        if (aceptarCambio($_POST['aceptar_cambio'])) {
-            $mensaje = "Cambio aceptado.";
-        } else {
-            $mensaje = "Fallo al aceptar el cambio.";
-        }
+        aceptarCambio($_POST['aceptar_cambio']);
         include "cambios.php";
     } elseif (isset($_POST['rechazar_cambio'])) {
-        if (rechazarCambio($_POST['rechazar_cambio'])) {
-            $mensaje = "Cambio rechazado.";
-        } else {
-            $mensaje = "Fallo al rechazar el cambio.";
-        }
+        rechazarCambio($_POST['rechazar_cambio']);
         include "cambios.php";
     } elseif (isset($_POST['logout'])) {
         session_destroy();
