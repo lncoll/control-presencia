@@ -17,7 +17,7 @@ class PDF extends FPDF {
     function Header()
     {
         // Logo
-        $this->Image('img/logo.png',10,8,25, 25);
+        $this->Image('img/logo.jpg',10,8,25, 25);
         // Arial bold 16
         $this->SetFont('Arial', 'B', 16);
         $this->Cell(0, 10, 'Listado de registros', 0, 1, 'C');

@@ -220,6 +220,7 @@ function editReg($reg_id, $fecha, $hora, $razon) {
         if ($_SESSION['user_id'] != $row['user_id']) {
             $mensaje = "No puedes modificar registros de otros usuarios.";
             $result->close();
+            $conn->rollback();
             return false;
         }
         $tiempoviejo = $row['reg_time'];
@@ -240,15 +241,16 @@ function editReg($reg_id, $fecha, $hora, $razon) {
 // comprobar si la nueva hora solapa con periodo anterior o posterior
     $old = strtotime($tiempoviejo);
     if ($old < $new) {
-        $query = "SELECT reg_id, reg_time FROM registros WHERE user_id = " . $row['user_id'] . " AND reg_time BETWEEN '$tiempoviejo' AND '$nuevotiempo' ORDER BY reg_time ASC";
+        $query = "SELECT reg_id, reg_time FROM registros WHERE user_id = " . $_SESSION['user_id'] . " AND reg_time BETWEEN '$tiempoviejo' AND '$nuevotiempo' ORDER BY reg_time ASC";
         $periodo = "posterior";
     } else {
-        $query = "SELECT reg_id, reg_time FROM registros WHERE user_id = " . $row['user_id'] . " AND reg_time BETWEEN '$nuevotiempo' AND '$tiempoviejo' ORDER BY reg_time ASC";
+        $query = "SELECT reg_id, reg_time FROM registros WHERE user_id = " . $_SESSION['user_id'] . " AND reg_time BETWEEN '$nuevotiempo' AND '$tiempoviejo' ORDER BY reg_time ASC";
         $periodo = "anterior";
     }
     try {
         $result = $conn->query($query);
-        if ($result->num_rows > 0) {
+        if ($result->num_rows > 1) { // el registro viejo siempre está
+            $row = $result->fetch_assoc();
             $mensaje = "La nueva hora solapa con un periodo " . $periodo;
             $result->close();
             $conn->rollback();
