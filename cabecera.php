@@ -32,6 +32,7 @@ if ($_SESSION['role'] == 10) {
     }
 }
 ?>
+                <button type = submit name = mensajes>Mensajes</button>
                 <button type = submit name = editame>Mis datos</button>
                 <button type = submit name = logout>Salir</button>
             </form>

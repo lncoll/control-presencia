@@ -18,7 +18,7 @@ h1, h2 {
     padding: 20px;
     background-color: #ffffff;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 #mensaje {
@@ -93,7 +93,7 @@ h1, h2 {
     background-color: #ffffff;
     padding: 0px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     width: 300px;
     margin: 0 auto;
 /*    margin-bottom: 20px;*/
@@ -118,7 +118,7 @@ h1, h2 {
 .busca-form {
     padding: 5px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     width: fit-content;
     margin: 0 auto;
 }
@@ -150,7 +150,7 @@ h1, h2 {
 .ereg-form {
     padding: 5px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     width: fit-content;
     margin: 0 auto;
     font-size: large;
@@ -188,7 +188,7 @@ h1, h2 {
     background-color: #ffffff;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     width: 300px;
     margin: 0 auto;
 }
@@ -340,4 +340,24 @@ h1, h2 {
 
 .navbar .dropdown:hover .dropbtn {
     background-color: #3e8e41;
+}
+
+.mensajes {
+    margin: 0px auto;
+    padding: 20px;
+    border: black 1px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    background-color: #D0D0E0;
+    width: 500px;
+}
+
+.mensajes h3 {
+    text-align: center;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    padding: 5px;
+    color: #D0D0E0;
+    background-color: #111;
+    width: 100%;
 }

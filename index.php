@@ -256,7 +256,6 @@ function editReg($reg_id, $fecha, $hora, $razon) {
             $conn->rollback();
             return false;
         }
-        $anterior = $row['reg_time'];
         $result->close();
     } catch (Exception $e) {
         $mensaje = "Error: " . $e->getMessage();
@@ -300,12 +299,12 @@ function aceptarCambio($cambio_id) {
         $posterior = $row['posterior'];
         $result->close();
     } catch (Exception $e) {
-        $mensaje = "Error: " . $e->getMessage();
+        $mensaje = "Error 1: " . $e->getMessage();
         $conn->rollback();
         return false;
     }
 
-    $query = "INSERT INTO mensajes (de, para, texto) VALUES (".$_SESSION['user_id'].", $user_id, 'Tu solicitud de cambio de registro a las $posterior ha sido aceptado.');";
+    $query = "INSERT INTO mensajes (de, para, texto, estado) VALUES (".$_SESSION['user_id'].", $user_id, 'Tu solicitud de cambio de registro a las $posterior ha sido aceptado.', 0);";
     try {
         if ($conn->query($query) === FALSE) {
             $mensaje = "Ha fallado la aceptación del cambio.";
@@ -313,7 +312,7 @@ function aceptarCambio($cambio_id) {
             return false;
         }
     } catch (Exception $e) {
-        $mensaje = "Error: " . $e->getMessage();
+        $mensaje = "Error 2: " . $e->getMessage();
         $conn->rollback();
         return false;
     }
@@ -329,7 +328,7 @@ function aceptarCambio($cambio_id) {
             return false;
         }
     } catch (Exception $e) {
-        $mensaje = "Error: " . $e->getMessage();
+        $mensaje = "Error 3: " . $e->getMessage();
         $conn->rollback();
         return false;
     }
@@ -355,7 +354,7 @@ function rechazarCambio($cambio_id) {
         return false;
     }
 
-    $query = "INSERT INTO mensajes (de, para, texto) VALUES (".$_SESSION['user_id'].", $user_id, 'Tu solicitud de cambio de registro a las $posterior ha sido rechazado.');";
+    $query = "INSERT INTO mensajes (de, para, texto, estado) VALUES (".$_SESSION['user_id'].", $user_id, 'Tu solicitud de cambio de registro a las $posterior ha sido rechazado.', 0);";
     try {
         if ($conn->query($query) === FALSE) {
             $mensaje = "Ha fallado el rechazo del cambio.";
@@ -545,6 +544,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         include "editreg.php";
     }elseif (isset($_POST['cambios'])) {
         include "cambios.php";
+    }elseif (isset($_POST['mensajes'])) {
+        include "mensajes.php";
     } elseif (isset($_POST['create_employee']) && $_SESSION['role'] == 10) {
         if (createEmployee($_POST['username'], $_POST['nombre'], $_POST['password'], $_POST['NIF'], $_POST['email'], $_POST['role'])) {
             $mensaje = "Usuario creado.";

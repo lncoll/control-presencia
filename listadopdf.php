@@ -12,12 +12,14 @@ class PDF extends FPDF {
     public $_fin;
     public $_altocelda;
     public $_printth;
+    public $_logo = "img/logo.png";
+
     
     // Cabecera de página
     function Header()
     {
         // Logo
-        $this->Image('img/logo.jpg',10,8,25, 25);
+        $this->Image($this->_logo,10,8,25, 25);
         // Arial bold 16
         $this->SetFont('Arial', 'B', 16);
         $this->Cell(0, 10, 'Listado de registros', 0, 1, 'C');
@@ -89,6 +91,7 @@ if (isset($_POST['pdf'])) {
     $pdf->_fin = substr($fin, 0, 10);
     $pdf->_altocelda = $altocelda;
     $pdf->_printth = true;
+    $pdf->_logo = "img/$logo";
     $pdf->AliasNbPages();
     $pdf->AddPage();
     $pdf->SetFont('Arial','',12);
@@ -110,9 +113,16 @@ if (isset($_POST['pdf'])) {
                 $sal = new DateTime($reg_time);
                 $fecha = $sal->format('d/m/Y');
                 if ($ent) {
+                    $tiempo = tiempostr($ent, $sal);
                     $lapso = $ent->diff($sal);
-                    $totalminutos += $lapso->days * 1440 + $lapso->h * 60 + $lapso->i;
-                    if ($lapso->days > 0) $tiempo = $lapso->format('%d d %H:%I'); else $tiempo = $lapso->format('%H:%I');
+                    $minutos = $lapso->days * 1440 + $lapso->h * 60 + $lapso->i;
+                    $minutos -= $minutos % $bloquetiempo;
+                    $totalminutos += $minutos;
+/*                    if ($lapso->days > 0) {
+                        $tiempo = sprintf("%dd %02d:%02d", floor($minutos/1440), floor($minutos/60), $minutos % 60);
+                    } else {
+                        $tiempo = sprintf("%02d:%02d", floor($minutos/60), $minutos % 60);
+                    } */
                     $pdf->SetX(40); // Cell(30, $altocelda, '', 0, 0, 'C');
                     $pdf->Cell(30, $altocelda, $fecha, 1, 0, 'C');
                     $pdf->Cell(30, $altocelda, $ent->format('H:i'), 1, 0, 'C');

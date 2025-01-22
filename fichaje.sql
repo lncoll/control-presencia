@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 05-01-2025 a las 21:59:43
--- Versión del servidor: 11.6.2-MariaDB-ubu2404
--- Versión de PHP: 8.3.15
+-- Tiempo de generación: 22-01-2025 a las 17:52:31
+-- Versión del servidor: 10.11.8-MariaDB-0ubuntu0.24.04.1
+-- Versión de PHP: 8.3.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -31,7 +31,7 @@ CREATE TABLE `cambios` (
   `id` int(11) NOT NULL,
   `reg_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `estado` int(11) NOT NULL,
+  `estado` int(11) NOT NULL DEFAULT 0,
   `anterior` datetime NOT NULL,
   `posterior` datetime NOT NULL,
   `comentario` text NOT NULL
@@ -50,9 +50,16 @@ CREATE TABLE `empleados` (
   `password` varchar(64) NOT NULL,
   `NIF` varchar(16) NOT NULL,
   `email` varchar(64) NOT NULL,
-  `dentro` tinyint(1) NOT NULL,
-  `role` int(11) NOT NULL
+  `dentro` tinyint(1) NOT NULL DEFAULT 0,
+  `role` int(11) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `empleados`
+--
+
+INSERT INTO `empleados` (`user_id`, `username`, `nombre`, `password`, `NIF`, `email`, `dentro`, `role`) VALUES
+(1, 'admin', 'Administrador', PASSWORD('123456789'), '00000000T', 'admin@localhost', 0, 10);
 
 -- --------------------------------------------------------
 
@@ -62,9 +69,10 @@ CREATE TABLE `empleados` (
 
 CREATE TABLE `mensajes` (
   `msg_id` int(11) NOT NULL,
-  `estado` int(11) NOT NULL,
+  `estado` int(11) NOT NULL DEFAULT 0,
   `de` int(11) NOT NULL,
   `para` int(11) NOT NULL,
+  `hora` datetime NOT NULL DEFAULT current_timestamp(),
   `texto` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -77,11 +85,10 @@ CREATE TABLE `mensajes` (
 CREATE TABLE `registros` (
   `reg_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `reg_time` datetime DEFAULT NULL,
+  `reg_time` datetime NOT NULL DEFAULT current_timestamp(),
   `entrada` tinyint(1) NOT NULL,
-  `creado` datetime NOT NULL,
-  `modificado` datetime DEFAULT NULL,
-  `spare` int(11) DEFAULT NULL
+  `creado` datetime NOT NULL DEFAULT current_timestamp(),
+  `modificado` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

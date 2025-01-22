@@ -49,8 +49,15 @@ try {
                         $sal = new DateTime($reg_time);
                         $fecha = $sal->format('d/m/Y');
                         if ($ent) {
-                            $lapso = $ent->diff($sal);
-                            if ($lapso->days > 0) $tiempo = $lapso->format('%d d %H:%I'); else $tiempo = $lapso->format('%H:%I');
+                            $tiempo = tiempostr($ent, $sal);
+/*                            $lapso = $ent->diff($sal);
+                            $minutos = $lapso->days * 1440 + $lapso->h * 60 + $lapso->i;
+                            $minutos -= $minutos % $bloquetiempo;
+                            if ($lapso->days > 0) {
+                                $tiempo = sprintf("%dd %02d:%02d", floor($minutos/1440), floor($minutos/60), $minutos % 60);
+                            } else {
+                                $tiempo = sprintf("%02d:%02d", floor($minutos/60), $minutos % 60);
+                            }*/
                             echo "<tr><td>" . $fecha . "</td><td>" . $ent->format('H:i') . "</td><td>" . $sal->format('H:i') . "</td><td>" . $tiempo . "</td></tr>\n";
                         } else
                             echo "<tr><td>" . $fecha . "</td><td>" . $ent->format('H:i') . "</td><td>---</td><td>---</td></tr>\n";                        
