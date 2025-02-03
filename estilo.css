@@ -38,7 +38,7 @@ h1, h2 {
     margin-right: auto;
 }
   
-.tlistado td, #tlistado th {
+.tlistado td, th {
     border: 1px solid #ddd;
     padding: 8px;
 }
@@ -50,7 +50,7 @@ h1, h2 {
 .tlistado th {
     padding-top: 12px;
     padding-bottom: 12px;
-    text-align: left;
+    text-align: center;
     background-color: #8080f2;
     color: white;
 }
@@ -113,6 +113,16 @@ h1, h2 {
 
 .reg-form button[type="submit"]:hover {
     background-color: #8080F2;
+}
+
+.reg-form p {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #b4b43d;
 }
 
 .busca-form {
@@ -182,6 +192,13 @@ h1, h2 {
     border: 1px solid #cccccc;
     border-radius: 4px;
     box-sizing: border-box;
+}
+reg-form p {
+    text-align: center;
+    margin-bottom: 20px;
+    margin-top: 5px;
+    background-color: #b4b43d;
+    width: 100%;
 }
 
 .login-form {

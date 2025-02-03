@@ -2,6 +2,17 @@
 include_once 'global.php';
 require('fpdf186/fpdf.php');
 
+// Iniciar sesión si no está iniciada
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Verificar si el usuario está autenticado
+if (!isset($_SESSION['user_id'])) {
+    header('Location: '.dirname($_SERVER['PHP_SELF']));
+    exit();
+}
+
 class PDF extends FPDF {
     // Variables a pasar a la clase
     public $_nombreempresa;
@@ -97,18 +108,18 @@ if (isset($_POST['pdf'])) {
     $pdf->SetFont('Arial','',12);
 
     $totalminutos = 0;
-    $stmt = $conn->stmt_init();
-    $stmt->prepare("SELECT reg_time, entrada FROM registros WHERE reg_time BETWEEN ? AND ? AND user_id = ? ORDER BY reg_id ASC;");
-    $stmt->bind_param("ssi", $inicio, $fin, $busca_user);
-    $stmt->execute();
-    $stmt->bind_result($reg_time, $entrada);
-    $stmt->store_result();
-    if ($stmt->num_rows == 0) {
+    $stmt_pdf = $conn->stmt_init();
+    $stmt_pdf->prepare("SELECT reg_time, entrada FROM registros WHERE reg_time BETWEEN ? AND ? AND user_id = ? ORDER BY reg_id ASC;");
+    $stmt_pdf->bind_param("ssi", $inicio, $fin, $busca_user);
+    $stmt_pdf->execute();
+    $stmt_pdf->bind_result($reg_time, $entrada);
+    $stmt_pdf->store_result();
+    if ($stmt_pdf->num_rows == 0) {
         $pdf->SetY($pdf->GetY() + $altocelda);
         $pdf->SetX(40);
         $pdf->Cell(120, $altocelda, 'No hay registros', 1, 1, 'C');
     } else {
-        while($row = $stmt->fetch()) {
+        while($row = $stmt_pdf->fetch()) {
             if (!$entrada) {
                 $sal = new DateTime($reg_time);
                 $fecha = $sal->format('d/m/Y');
@@ -156,6 +167,6 @@ if (isset($_POST['pdf'])) {
         $pdf->SetX(40);  $pdf->Write($altocelda, 'Fecha:');
         $pdf->SetX(120); $pdf->Write($altocelda, "Fecha:\n");
     }
-    $stmt->close();
+    $stmt_pdf->close();
     $pdf->Output();
 }

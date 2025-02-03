@@ -1,6 +1,11 @@
 <?php
 include_once 'global.php';
 
+if (str_contains(strtolower($_SERVER['REQUEST_URI']), 'php')) {
+    header('Location: '.dirname($_SERVER['PHP_SELF']));
+    exit();
+}
+
 if (!isset($_SESSION['user_id']) && !isset($_POST['login']) && !isset($_POST['crearconfig'])) {
     include "login.php";
     exit();
@@ -47,9 +52,11 @@ function registerEntry($user_id) {
     }
     $hora = new DateTime('now');
     $hora = $hora->format("Y-m-d H:i");
+    $IP = $_SERVER['REMOTE_ADDR'];
+    $location = $_POST['latitud'] . ", " . $_POST['longitud'];
     try {
         $conn->begin_transaction();
-        $query = "INSERT INTO registros (user_id, reg_time, entrada, creado) VALUES ($user_id, '$hora', TRUE, NOW())";
+        $query = "INSERT INTO registros (user_id, reg_time, entrada, IP, location, creado) VALUES ($user_id, NOW(), TRUE, '$IP', '$location', NOW())";
         if ($conn->query($query) === TRUE) {
             $query = "UPDATE empleados SET dentro = 1 WHERE user_id = $user_id";
             if ($conn->query($query) === TRUE) {
@@ -81,9 +88,11 @@ function registerExit($user_id) {
     }
     $hora = new DateTime('now');
     $hora = $hora->format("Y-m-d H:i");
+    $IP = $_SERVER['REMOTE_ADDR'];
+    $location = $_POST['latitud'] . ", " . $_POST['longitud'];
     try {
         $conn->begin_transaction();
-        $query = "INSERT INTO registros (user_id, reg_time, entrada, creado) VALUES ($user_id, '$hora', FALSE, NOW())";
+        $query = "INSERT INTO registros (user_id, reg_time, entrada, IP, location, creado) VALUES ($user_id, NOW(), FALSE, '$IP', '$location', NOW())";
         if ($conn->query($query) === TRUE) {
             $query = "UPDATE empleados SET dentro = 0 WHERE user_id = $user_id";
             if ($conn->query($query) === TRUE) {

@@ -1,22 +1,35 @@
 <?php
+// Iniciar sesión si no está iniciada
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Verificar si el usuario está autenticado
+if (!isset($_SESSION['user_id'])) {
+    header('Location: '.dirname($_SERVER['PHP_SELF']));
+    exit();
+}
+
 // Purpose: List all users in the database
+
+if (!isset($_POST['role'])) $role = ""; else $role = $_POST['role'];
 if ($_POST['users'] == "") $busca_nombre = "%"; else $busca_nombre = "%".$_POST['users']."%";
 
 try {
-    $stmt = $conn->stmt_init();
-    if ($_POST['role'] == "") {
-        $stmt->prepare("SELECT user_id, username, nombre FROM empleados WHERE nombre LIKE ? ORDER BY user_id ASC;");
-        $stmt->bind_param("s", $busca_nombre);
+    $stmt_usr = $conn->stmt_init();
+    if ($role == "") { 
+        $stmt_usr->prepare("SELECT user_id, username, nombre FROM empleados WHERE nombre LIKE ? ORDER BY user_id ASC;");
+        $stmt_usr->bind_param("s", $busca_nombre);
     } else {
-        $stmt->prepare("SELECT user_id, username, nombre FROM empleados WHERE nombre LIKE ? AND role = ? ORDER BY user_id ASC;");
-        $stmt->bind_param("si", $busca_nombre, $_POST['role']);
+        $stmt_usr->prepare("SELECT user_id, username, nombre FROM empleados WHERE nombre LIKE ? AND role = ? ORDER BY user_id ASC;");
+        $stmt_usr->bind_param("si", $busca_nombre, $role);
     }
-    $stmt->execute();
-    $stmt->bind_result($user_id, $username, $nombre);
-    $stmt->store_result();
+    $stmt_usr->execute();
+    $stmt_usr->bind_result($user_id, $username, $nombre);
+    $stmt_usr->store_result();
 } catch (Exception $e) {
     $mensaje = "Error: " . $e->getMessage();
-    $stmt->close();
+    $stmt_usr->close();
 }
 
 $titulo = "Listado de usuarios";
@@ -36,7 +49,7 @@ include 'cabecera.php';
         </form>
         <h1>Listado de usuarios</h1>
 <?php
-if ($stmt->num_rows > 0) {
+if ($stmt_usr->num_rows > 0) {
     echo "<table class='tlistado'>
             <tr>
                 <th>ID</th>
@@ -44,7 +57,7 @@ if ($stmt->num_rows > 0) {
                 <th>Nombre</th>
                 <th>Acciones</th>
             </tr>";
-    while($row = $stmt->fetch()) {
+    while($row = $stmt_usr->fetch()) {
         echo "<tr>
                 <td>" . $user_id. "</td>
                 <td>" . $username. "</td>
@@ -59,9 +72,9 @@ if ($stmt->num_rows > 0) {
     }
     echo "</table>";
 } else {
-    echo "0 results";
+    echo "<h2>0 resultados</h2>";
 }
-$stmt->close();
+$stmt_usr->close();
 
 ?>
     </body>

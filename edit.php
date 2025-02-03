@@ -1,4 +1,15 @@
 <?php
+// Iniciar sesión si no está iniciada
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Verificar si el usuario está autenticado
+if (!isset($_SESSION['user_id'])) {
+    header('Location: '.dirname($_SERVER['PHP_SELF']));
+    exit();
+}
+
 if ($_POST['editame'] > 0) {
     $user_id = mysqli_real_escape_string($conn,  $_POST['editame']);
 } else {

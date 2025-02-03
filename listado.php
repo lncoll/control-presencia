@@ -1,4 +1,15 @@
 <?php
+// Iniciar sesión si no está iniciada
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Verificar si el usuario está autenticado
+if (!isset($_SESSION['user_id'])) {
+    header('Location: '.dirname($_SERVER['PHP_SELF']));
+    exit();
+}
+
 if ($_POST['listar'] != "") $busca_user = mysqli_real_escape_string($conn,  $_POST['listar']); else $busca_user = $_SESSION['user_id'];
 if ($_POST['mes'] != "") $mes = mysqli_real_escape_string($conn,$_POST['mes']); else $mes = date('Y-m');
 $inicio = $mes."-01";
@@ -18,19 +29,19 @@ try {
     $result->close();
 } catch (Exception $e) {
     $mensaje = "Error: " . $e->getMessage();
-    $stmt->close();
+    $stmt_lis->close();
 }
 
-$stmt = $conn->stmt_init();
-$stmt->prepare("SELECT reg_time, entrada FROM registros WHERE reg_time BETWEEN ? AND ? AND user_id = ? ORDER BY reg_id ASC;");
+$stmt_lis = $conn->stmt_init();
+$stmt_lis->prepare("SELECT reg_time, entrada FROM registros WHERE reg_time BETWEEN ? AND ? AND user_id = ? ORDER BY reg_id ASC;");
 try {
-    $stmt->bind_param("ssi", $inicio, $fin, $busca_user);
-    $stmt->execute();
-    $stmt->bind_result($reg_time, $entrada);
-    $stmt->store_result();
+    $stmt_lis->bind_param("ssi", $inicio, $fin, $busca_user);
+    $stmt_lis->execute();
+    $stmt_lis->bind_result($reg_time, $entrada);
+    $stmt_lis->store_result();
 } catch (Exception $e) {
     $mensaje .= "Error: " . $e->getMessage();
-    $stmt->close();
+    $stmt_lis->close();
 }
 ?>
         <form method="post" class="busca-form">
@@ -43,8 +54,8 @@ try {
             <caption>Registros para: <?= $nombre ?></caption>
             <tr><th>Fecha:</th><th>Entrada:</th><th>Salida:</th><th>Tiempo:</th></tr>
 <?php
-            if ($stmt->num_rows > 0) {
-                while($row = $stmt->fetch()) {
+            if ($stmt_lis->num_rows > 0) {
+                while($row = $stmt_lis->fetch()) {
                     if (!$entrada) {
                         $sal = new DateTime($reg_time);
                         $fecha = $sal->format('d/m/Y');
@@ -68,7 +79,7 @@ try {
             } else {
                 echo "<tr><td colspan='4'>No hay registros</td></tr>";
             }
-            $stmt->close();
+            $stmt_lis->close();
             ?>
         </table>
     </body>

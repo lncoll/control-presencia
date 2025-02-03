@@ -10,7 +10,10 @@ function tiempostr($ent, $sal) {
     if ($lapso->days > 0) {
         $tiempo = sprintf("%dd %02d:%02d", floor($minutos/1440), floor($minutos/60), $minutos % 60);
     } else {
-        $tiempo = sprintf("%02d:%02d", floor($minutos/60), $minutos % 60);
+        if (0 < $minutos)
+            $tiempo = sprintf("%02d:%02d", floor($minutos/60), $minutos % 60);
+        else
+            $tiempo = "<$bloquetiempo min";        
     }
     return $tiempo;
 }

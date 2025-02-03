@@ -1,6 +1,6 @@
 # Control de Presencia de Empleados (web para Fichar)
 
-Esta aplicación permite gestionar y controlar la presencia de los empleados en una empresa.
+Esta aplicación permite gestionar y controlar las entradas y salidas de los empleados.
 
 ## Características
 
@@ -32,6 +32,7 @@ Esta aplicación permite gestionar y controlar la presencia de los empleados en 
 1. Acceder a la url configurada
 
 ## ToDo
+
 1. Implementar un sencillo servicio de mensajería.
 2. Comentar bien el código, (esto tendría que ser el punto 1 ;p )
 

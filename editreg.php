@@ -1,4 +1,15 @@
 <?php
+// Iniciar sesión si no está iniciada
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Verificar si el usuario está autenticado
+if (!isset($_SESSION['user_id'])) {
+    header('Location: '.dirname($_SERVER['PHP_SELF']));
+    exit();
+}
+
 $query = "SELECT user_id, reg_time, entrada FROM registros WHERE reg_id = " . $_POST['editareg'] . " ;"; 
 try {
     $result = $conn->query($query);
