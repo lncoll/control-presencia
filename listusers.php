@@ -75,7 +75,4 @@ if ($stmt_usr->num_rows > 0) {
     echo "<h2>0 resultados</h2>";
 }
 $stmt_usr->close();
-
-?>
-    </body>
-</html>
+include 'pie.php';

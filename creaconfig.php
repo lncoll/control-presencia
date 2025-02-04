@@ -72,7 +72,5 @@ if (isset($_POST['crearconfig'])) {
 
             <button type="submit" name="crearconfig">Crear configuración</button>
         </form>
-    </body>
-</html>
-
 <?php
+include 'pie.php';

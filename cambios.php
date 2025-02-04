@@ -80,5 +80,5 @@ if ($stmt_cam->num_rows > 0) {
 $stmt_cam->close();
 ?>
         </table>
-    </body>
-</html>
+<?php
+include 'pie.php';

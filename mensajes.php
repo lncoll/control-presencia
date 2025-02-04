@@ -38,6 +38,4 @@ try {
     exit();
 }
 
-?>
-    </body>
-</html>
+include 'pie.php';

@@ -13,7 +13,7 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-class PDF extends FPDF {
+class LPDF extends FPDF {
     // Variables a pasar a la clase
     public $_nombreempresa;
     public $_nombre;
@@ -80,9 +80,10 @@ $altocelda = 5.15;
 if ($_POST['pdf'] != "") $busca_user = mysqli_real_escape_string($conn,  $_POST['pdf']); else $busca_user = $_SESSION['user_id'];
 if ($_POST['mes'] != "") $mes = mysqli_real_escape_string($conn,$_POST['mes']); else $mes = date('Y-m');
 $inicio = $mes."-01";
-$fin = DateTime::createFromFormat('Y-m-d', $inicio);
-$fin->modify('last day of this month');
-$fin = $fin->format('Y-m-d 23:59:59');
+$end = DateTime::createFromFormat('Y-m-d', $inicio);
+$end->modify('last day of this month');
+$fin = $end->format('Y-m-d 23:59:59');
+
 
 // Generar un pdf con el listado de registros
 if (isset($_POST['pdf'])) {
@@ -92,8 +93,9 @@ if (isset($_POST['pdf'])) {
     $nombre = $row['nombre'];
     $nif = $row['NIF'];
     $result->close();
+    $filename = $nombre . $end->format("-Y-m") . ".pdf";
 
-    $pdf = new PDF();
+    $pdf = new LPDF();
     $pdf->_nombreempresa = iconv('UTF-8', 'windows-1252', $nombreempresa);
     $pdf->_nombre = iconv('UTF-8', 'windows-1252', $nombre);
     $pdf->_nifempresa = $nifempresa;
@@ -168,5 +170,5 @@ if (isset($_POST['pdf'])) {
         $pdf->SetX(120); $pdf->Write($altocelda, "Fecha:\n");
     }
     $stmt_pdf->close();
-    $pdf->Output();
+    $pdf->Output('D', $filename);
 }

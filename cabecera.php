@@ -36,8 +36,12 @@ if ($_SESSION['role'] == 10) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="estilo.css" rel="stylesheet" type="text/css"> 
         <title><?= htmlspecialchars($titulo, ENT_QUOTES, 'UTF-8') ?></title>
+        <link rel="stylesheet" href="/js/leaflet/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+        <script src="/js/leaflet/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     </head>
     <body>
+        <div id="page-container">
+        <div id="content-wrap">
         <div class="navbar">
             <form method="post">
                 <button type="submit" name="dashboard">Inicio</button>

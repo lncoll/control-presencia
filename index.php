@@ -53,7 +53,7 @@ function registerEntry($user_id) {
     $hora = new DateTime('now');
     $hora = $hora->format("Y-m-d H:i");
     $IP = $_SERVER['REMOTE_ADDR'];
-    $location = $_POST['latitud'] . ", " . $_POST['longitud'];
+    $location = $_POST['latitud'] . "|" . $_POST['longitud'];
     try {
         $conn->begin_transaction();
         $query = "INSERT INTO registros (user_id, reg_time, entrada, IP, location, creado) VALUES ($user_id, NOW(), TRUE, '$IP', '$location', NOW())";
@@ -591,6 +591,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (isset($_POST['crearconfig'])) {
         crearconfiguracion();
         include "login.php";
+    } elseif (isset($_POST['ver_reg'])) {
+        include "verreg.php";
     } else {
         echo "Solicitud no válida.<br />\n";
         print_r($_POST);

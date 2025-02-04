@@ -85,7 +85,6 @@ if ($_SESSION['role'] < 10 || $id == $_SESSION['user_id']) {
 
             <button type="submit" name="edit_password">Cambiar Contraseña</button>
         </form>
-    </body>
-</html>
 <?php
 $result->close();
+include 'pie.php';

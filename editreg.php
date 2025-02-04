@@ -54,5 +54,5 @@ if ($entrada) {
             <br />
             <button type="submit" name="modifica" value="<?= $_POST['editareg'] ?>">Solicitar modificación</button>
         </form>
-    </body>
-</html>
+<?php
+include 'pie.php';

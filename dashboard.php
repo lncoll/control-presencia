@@ -29,24 +29,55 @@ include 'cabecera.php';
 $reg_sal = 0;
 
 echo "        <h1>Bienvenid@ " . $_SESSION['username'] . " </h1>\n";
+echo "        <div id='map'></div>\n";
 echo "        <form method='post' class='reg-form' id='pos'>\n";
-echo "        <p>Habilita el permiso de ubicación para poder realizar el registro</p>\n";
-//echo "        <p id='pos'></p>\n";
+echo "        <p>Esperando ubicación</p>\n";
 echo "        </form>\n";
 ?>
         <script>
 var x = document.getElementById('pos');
-var dentro = <?php echo $_SESSION['dentro']; ?>;
+var map = L.map('map').setView([0, 0], 16);
+var marker = L.marker([0, 0]).addTo(map);
+var circle = L.circle([0, 0], {
+    color: 'blue',
+    fillColor: '#03f',
+    fillOpacity: 0.3,
+    radius: 10
+}).addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+}).addTo(map);
+
+function geoError(error){
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            x.innerHTML = "<p>El usuario no permite la petición de geolocalización.<br>Permita la ubicación para poder realizar el registro.</p>";
+            break;
+        case error.POSITION_UNAVAILABLE:
+            x.innerHTML = "<p>Información de geolocalización no disponible.<br>Pulse en 'Inicio' para volver a intentarlo.</p>";
+            break;
+        case error.TIMEOUT:
+            x.innerHTML = "<p>La petición ha tardado demasiado tiempo en responder.<br>Pulse en 'Inicio' para volver a intentarlo.</p>";
+            break;
+        case error.UNKNOWN_ERROR:
+            x.innerHTML = "Error desconocido";
+            break;
+    }
+}
 
 function getLocation() {
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(setPosition);
-    } else {
-        x.innerHTML = "Geolocation is not supported by this browser.";
+        navigator.geolocation.watchPosition(setPosition, geoError, {enableHighAccuracy: false, timeout: 5000, maximumAge: 0});
     }
 }
 
 function setPosition(position) {
+    var dentro = <?php echo $_SESSION['dentro']; ?>;
+    map.setView([position.coords.latitude, position.coords.longitude], 16);
+    marker.setLatLng([position.coords.latitude, position.coords.longitude]);
+    circle.setLatLng([position.coords.latitude, position.coords.longitude]);
+    circle.setRadius(position.coords.accuracy / 2);
+
     if (dentro) {
         x.innerHTML =
 "            <button type = submit name = register_exit>Registrar salida</button>\n" + 
@@ -95,5 +126,6 @@ getLocation();
             $stmt_das->close();
             ?>
         </table>
-    </body>
-</html>
+        <p class="notapie">* Nota, el tiempo se calcula en bloques de <?= $bloquetiempo ?> minutos.</p>
+<?php
+include 'pie.php';

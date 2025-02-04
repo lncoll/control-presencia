@@ -19,5 +19,5 @@ if (isset($mensaje)) echo "        <h2 id='mensaje'>" . $mensaje . "</h2><br />"
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit" name="login">Entrar</button>
         </form>
-    </body>
-</html>
+<?php
+include 'pie.php';

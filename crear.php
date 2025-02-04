@@ -40,5 +40,5 @@ include 'cabecera.php';
 
             <button type="submit" name="create_employee">Crear</button>
         </form>
-    </body>
-</html>
+<?php
+include 'pie.php';
