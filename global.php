@@ -6,6 +6,7 @@ function tiempostr($ent, $sal) {
     
     $lapso = $ent->diff($sal);
     $minutos = $lapso->days * 1440 + $lapso->h * 60 + $lapso->i;
+    $minutos += (int)($bloquetiempo / 3);
     $minutos -= $minutos % $bloquetiempo;
     if ($lapso->days > 0) {
         $tiempo = sprintf("%dd %02d:%02d", floor($minutos/1440), floor($minutos/60), $minutos % 60);

@@ -50,17 +50,18 @@ function registerEntry($user_id) {
         include "dashboard.php";
         exit();
     }
-    $hora = new DateTime('now');
-    $hora = $hora->format("Y-m-d H:i");
     $IP = $_SERVER['REMOTE_ADDR'];
     $location = $_POST['latitud'] . "|" . $_POST['longitud'];
+    $momento = new DateTime(NULL, new DateTimeZone('UTC'));
+    $momento->setTimezone(new DateTimeZone($_POST['timezone']));
+    $hora = $momento->format("Y-m-d H:i");
     try {
         $conn->begin_transaction();
-        $query = "INSERT INTO registros (user_id, reg_time, entrada, IP, location, creado) VALUES ($user_id, NOW(), TRUE, '$IP', '$location', NOW())";
+        $query = "INSERT INTO registros (user_id, reg_time, entrada, IP, location, creado) VALUES ($user_id, '$hora', TRUE, '$IP', '$location', '$hora')";
         if ($conn->query($query) === TRUE) {
             $query = "UPDATE empleados SET dentro = 1 WHERE user_id = $user_id";
             if ($conn->query($query) === TRUE) {
-                $_SESSION['dentro'] = true;
+                $_SESSION['dentro'] = 1;
                 $conn->commit();
                 return true;
             } else {
@@ -96,7 +97,7 @@ function registerExit($user_id) {
         if ($conn->query($query) === TRUE) {
             $query = "UPDATE empleados SET dentro = 0 WHERE user_id = $user_id";
             if ($conn->query($query) === TRUE) {
-                $_SESSION['dentro'] = false;
+                $_SESSION['dentro'] = 0;
                 $conn->commit();
                 return true;
             } else {

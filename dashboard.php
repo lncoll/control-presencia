@@ -82,12 +82,14 @@ function setPosition(position) {
         x.innerHTML =
 "            <button type = submit name = register_exit>Registrar salida</button>\n" + 
 "            <input type='hidden' name='latitud' value=" + position.coords.latitude + ">\n" +
-"            <input type='hidden' name='longitud' value=" + position.coords.longitude + ">\n" ;
+"            <input type='hidden' name='longitud' value=" + position.coords.longitude + ">\n" +
+"            <input type='hidden' name='timezone' value=" + Intl.DateTimeFormat().resolvedOptions().timeZone + ">\n";
     } else {
         x.innerHTML =
 "            <button type = submit name = register_entry>Registrar entrada</button>\n" + 
 "            <input type='hidden' name='latitud' value=" + position.coords.latitude + ">\n" +
-"            <input type='hidden' name='longitud' value=" + position.coords.longitude + ">\n" ;
+"            <input type='hidden' name='longitud' value=" + position.coords.longitude + ">\n" +
+"            <input type='hidden' name='timezone' value=" + Intl.DateTimeFormat().resolvedOptions().timeZone + ">\n";
     }
 }
 
