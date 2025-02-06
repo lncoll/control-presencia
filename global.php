@@ -28,7 +28,7 @@ if (!isset($_POST['crearconfig'])) {
     include_once 'config.php';
 
     // Start the session
-    session_set_cookie_params(1800,"/");
+//    session_set_cookie_params(1800,"/");
     session_start();
 
     // Connect to the database

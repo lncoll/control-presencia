@@ -11,6 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 if ($_POST['listar'] != "") $busca_user = mysqli_real_escape_string($conn,  $_POST['listar']); else $busca_user = $_SESSION['user_id'];
+if (!isset($_POST['mes'])) $mes = date('Y-m'); else
 if ($_POST['mes'] != "") $mes = mysqli_real_escape_string($conn,$_POST['mes']); else $mes = date('Y-m');
 $inicio = $mes."-01";
 $fin = DateTime::createFromFormat('Y-m-d', $inicio);
@@ -29,7 +30,6 @@ try {
     $result->close();
 } catch (Exception $e) {
     $mensaje = "Error: " . $e->getMessage();
-    $stmt_lis->close();
 }
 
 $stmt_lis = $conn->stmt_init();

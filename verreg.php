@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-$reg_id = mysqli_real_escape_string($conn, $_POST['ver_mapa']);
+$reg_id = mysqli_real_escape_string($conn, $_POST['ver_reg']);
 $query = "SELECT empleados.nombre, registros.user_id, registros.reg_time, registros.entrada, registros.IP, registros.location, registros.creado, registros.modificado FROM registros INNER JOIN empleados ON empleados.user_id = registros.user_id WHERE registros.reg_id = ?;";
 try {
     $stmt_ver = $conn->stmt_init();
