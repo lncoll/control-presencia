@@ -538,6 +538,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $mensaje = "Fallo al modificar el registro.";
         } */
         include "dashboard.php";
+    } elseif (isset($_POST['msg_leido'])) {
+        $query = "UPDATE mensajes SET estado = 1 WHERE msg_id = " . $_POST['msg_leido'];
+        if ($conn->query($query) === FALSE) {
+            $mensaje = "Error al marcar el mensaje como leido.";
+        } else {
+            $mensaje = "Mensaje marcado como leido.";
+        }
+        include "mensajes.php";
     } elseif (isset($_POST['dashboard'])) {
         include "dashboard.php";
     } elseif (isset($_POST['editame'])) {

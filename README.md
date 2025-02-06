@@ -45,7 +45,7 @@ Cualquier sugerencia será bienvenida.
 1. Hacer un fork del repositorio.
 2. Crear un Pull Request.
 
-## Paquetes ajenos.
+## Paquetes ajenos
 
 Se utiliza un par de paquetes ajenos, incluidos en el git.
 Estos son;

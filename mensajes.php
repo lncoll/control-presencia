@@ -16,21 +16,33 @@ include 'cabecera.php';
 echo "        <h2>Mensajes</h2>\n";
 try {
     $stmt_men = $conn->stmt_init();
-    $stmt_men->prepare("SELECT `mensajes`.`estado`,`mensajes`.`hora`,`mensajes`.`texto`,`empleados`.`username`  FROM `mensajes` JOIN `empleados` ON `mensajes`.`de` = `empleados`.`user_id` WHERE `mensajes`.`para` = ?;");
+    $stmt_men->prepare("SELECT `mensajes`.`msg_id`, `mensajes`.`estado`,`mensajes`.`hora`,`mensajes`.`texto`,`empleados`.`username`  FROM `mensajes` JOIN `empleados` ON `mensajes`.`de` = `empleados`.`user_id` WHERE `mensajes`.`para` = ?;");
     $stmt_men->bind_param("i", $_SESSION["user_id"]);
     $stmt_men->execute();
-    $stmt_men->bind_result($estado, $hora, $texto, $remite);
+    $stmt_men->bind_result($msg_id, $estado, $hora, $texto, $remite);
     $stmt_men->store_result();
     if ($stmt_men->num_rows>0){
         while ($stmt_men->fetch()){
             echo "        <div class='mensajes'>\n";
             if ($estado)
-                echo "            <h3>De: ".$remite." - hora: ".$hora." - Leido</h3>\n";
+                echo <<<HTML
+            <h3>De: $remite - hora: $hora - Leído</h3>
+
+            <hr>
+            $texto
+        </div>
+HTML;
             else
-                echo "            <h3>De: ".$remite." - hora: ".$hora." - Nuevo</h3>\n";
-            echo "            <hr>\n";
-            echo "            ".$texto."\n";
-            echo "        </div>\n";
+                echo <<<HTML
+            <h3>De: $remite - hora: $hora - Nuevo</h3>
+
+            <hr>
+            $texto
+            <form method="post">
+                <button type="submit" name="msg_leido" value="$msg_id"> Marcar como leido</button>
+            </form>
+        </div>
+HTML;
         }
     }
 } catch (Exception $e) {

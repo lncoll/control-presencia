@@ -67,7 +67,7 @@ function geoError(error){
 
 function getLocation() {
     if (navigator.geolocation) {
-        navigator.geolocation.watchPosition(setPosition, geoError, {enableHighAccuracy: false, timeout: 5000, maximumAge: 0});
+        navigator.geolocation.watchPosition(setPosition, geoError, {enableHighAccuracy: true, timeout: 10000, maximumAge: 5000});
     }
 }
 

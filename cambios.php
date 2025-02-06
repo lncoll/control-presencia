@@ -16,21 +16,9 @@ if (!isset($_SESSION['user_id'])) {
 
 // Validar y sanitizar entrada
 $estado = isset($_POST['estado']) ? (int)$_POST['estado'] : 0;
-?>
-        <form method="post" class="busca-form">
-            Filtrar búsqueda por estado: 
-            <select name="estado">
-                <option value=""  <?php if ($estado === "") echo "selected"; ?>>Todos</option>
-                <option value="0" <?php if ($estado === 0) echo "selected"; ?>>Pendiente</option>
-                <option value="1" <?php if ($estado === 1) echo "selected"; ?>>Aceptado</option>
-                <option value="2" <?php if ($estado === 2) echo "selected"; ?>>Rechazado</option>
-            </select>
-            <button type="submit" name="cambios">Filtrar</button>
-        </form>
-<?php
 // Preparar consulta segura
 $stmt_cam = $conn->stmt_init();
-if ($estado === "") {
+if ($estado === -1) {
     $stmt_cam->prepare("SELECT * FROM cambios ORDER BY id DESC;");
 } else {
     $stmt_cam->prepare("SELECT * FROM cambios WHERE estado = ? ORDER BY id DESC;");
@@ -40,6 +28,17 @@ $stmt_cam->execute();
 $stmt_cam->bind_result($cambio_id, $reg_id, $user_id, $estado, $anterior, $posterior, $comentario);
 $stmt_cam->store_result();
 ?>
+        <form method="post" class="busca-form">
+            Filtrar búsqueda por estado: 
+            <select name="estado">
+                <option value="-1" <?php if ($estado === -1) echo "selected"; ?>>Todos</option>
+                <option value="0" <?php if ($estado === 0) echo "selected"; ?>>Pendiente</option>
+                <option value="1" <?php if ($estado === 1) echo "selected"; ?>>Aceptado</option>
+                <option value="2" <?php if ($estado === 2) echo "selected"; ?>>Rechazado</option>
+            </select>
+            <button type="submit" name="cambios">Filtrar</button>
+        </form>
+        <br>
         <h2>Solicitudes de cambio</h2>
         <table class="tlistado">
             <tr>
