@@ -49,7 +49,7 @@ Cualquier sugerencia será bienvenida.
 
 Se utiliza un par de paquetes ajenos, incluidos en el git.
 Estos son;
-- fpdf, para crear los informes en formato pdf. Puedes encontrarlo en https://http://www.fpdf.org/.
+- fpdf, para crear los informes en formato pdf. Puedes encontrarlo en http://www.fpdf.org/.
 - Leaflet, librería en JavaScript para mostrar los mapas. Su creador es de Ucrania y pide que si su librería es util pienses donar a alguna organización que apoye a la gente ucrana. Visita su web en https://leafletjs.com/.
 
 ## Licencia
