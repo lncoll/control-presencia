@@ -1,5 +1,6 @@
 <?php
-include_once 'config.php';
+include_once 'sys_config.php';
+include_once 'usr_config.php';
 
 function tiempostr($ent, $sal) {
     global $bloquetiempo;
@@ -19,14 +20,15 @@ function tiempostr($ent, $sal) {
     return $tiempo;
 }
 
-if (!file_exists(dirname(__FILE__) . "/config.php") && !isset($_POST['crearconfig'])) {
+if (!file_exists(dirname(__FILE__) . "/sys_config.php") && !isset($_POST['crearconfig'])) {
     include_once 'creaconfig.php';
     exit();
 }
 
 if (!isset($_POST['crearconfig'])) {
     // load config parameters
-    include_once 'config.php';
+    include_once 'sys_config.php';
+    include_once 'usr_config.php';
 
     // Start the session
 //    session_set_cookie_params(1800,"/");

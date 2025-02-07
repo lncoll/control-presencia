@@ -23,7 +23,7 @@ class LPDF extends FPDF {
     public $_fin;
     public $_altocelda;
     public $_printth;
-    public $_logo = "img/logo.png";
+    public $_logo = "uploads/logo.png";
 
     
     // Cabecera de página
@@ -104,7 +104,7 @@ if (isset($_POST['pdf'])) {
     $pdf->_fin = substr($fin, 0, 10);
     $pdf->_altocelda = $altocelda;
     $pdf->_printth = true;
-    $pdf->_logo = "img/$logo";
+    $pdf->_logo = "uploads/$logo";
     $pdf->AliasNbPages();
     $pdf->AddPage();
     $pdf->SetFont('Arial','',12);

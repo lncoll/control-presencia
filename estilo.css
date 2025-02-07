@@ -262,6 +262,7 @@ reg-form p {
 
 .login-form input[type="text"],
 .login-form input[type="email"],
+.login-form input[type="file"],
 .login-form select,
 .login-form input[type="password"] {
     width: 100%;

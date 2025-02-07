@@ -444,49 +444,99 @@ function crearconfiguracion(){
         $role = mysqli_real_escape_string($conn, $_POST['role']);
         $dentro = mysqli_real_escape_string($conn, $_POST['dentro']);
 
-        $fichero = fopen("config.php", "w");
+        $fichero = fopen("sys_config.php", "w");
         fwrite($fichero, "<?php\n");
         fwrite($fichero, "\$dbserver = '$dbserver';\n");
         fwrite($fichero, "\$dbuser = '$dbuser';\n");
         fwrite($fichero, "\$dbpass = '$dbpass';\n");
         fwrite($fichero, "\$dbname = '$dbname';\n");
+        fclose($fichero);
+        $mensaje .= "Fichero de configuración de base de datos guardado, ";
+        $fichero = fopen("usr_config.php", "w");
+        fwrite($fichero, "<?php\n");
         fwrite($fichero, "\$nombreempresa = '$nombreempresa';\n");
         fwrite($fichero, "\$nifempresa = '$nifempresa';\n");
+        fwrite($fichero, "\$bloquetiempo = 5;\n");
+        fwrite($fichero, "\$logo = 'logo.png';\n");
         fclose($fichero);
-        $mensaje = " Configuración guardada, ";
+        $mensaje .= " Configuración guardada, ";
     } catch (Exception $e) {
         $mensaje = "No se pudo crear el fichero de configuración, consulte al administrador web. " . $e->getMessage();
         include "creaconfig.php";
         exit();
     }
 
-    try {
+    try {  /// Actualizar la creación de tablas
+        $conn->set_charset("utf8mb4");
+        $conn->autocommit(FALSE);
         $conn->begin_transaction();
-        $query = "CREATE TABLE IF NOT EXISTS `empleados` (`user_id` int(11) NOT NULL AUTO_INCREMENT, `username` varchar(32) NOT NULL, `nombre` varchar(64) NOT NULL, `password` varchar(64) NOT NULL, `NIF` varchar(16) NOT NULL, `email` varchar(64) NOT NULL, `dentro` tinyint(1) NOT NULL, `role` int(11) NOT NULL, PRIMARY KEY (`user_id`), UNIQUE KEY `username` (`username`), UNIQUE KEY `NIF` (`NIF`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;";
-        if ($conn->query($query) != TRUE) {
-            $conn->rollback();
-            $mensaje = "Error al crear la tabla empleados";
-            include "creaconfig.php";
-            exit();
-        }
-        $query = "CREATE TABLE IF NOT EXISTS `registros` (`reg_id` int(11) NOT NULL AUTO_INCREMENT, `user_id` int(11) NOT NULL, `reg_time` datetime DEFAULT NULL, `entrada` tinyint(1) NOT NULL, `creado` datetime NOT NULL, `modificado` datetime DEFAULT NULL, `spare` int(11) DEFAULT NULL, PRIMARY KEY (`reg_id`), KEY `user_id` (`user_id`) USING BTREE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;";
-        if ($conn->query($query) != TRUE) {
-            $conn->rollback();
-            $mensaje = "Error al crear la tabla registros";
-            include "creaconfig.php";
-            exit();
-        }
-        $query = "CREATE TABLE IF NOT EXISTS `cambios` ( `id` int(11) NOT NULL AUTO_INCREMENT, `reg_id` int(11) NOT NULL, `user_id` int(11) NOT NULL, `estado` int(11) NOT NULL, `anterior` datetime NOT NULL, `posterior` datetime NOT NULL, `comentario` text NOT NULL, PRIMARY KEY (`id`), KEY `estado` (`estado`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;";
+        $query = "CREATE TABLE IF NOT EXISTS `cambios` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `reg_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `estado` int(11) NOT NULL DEFAULT 0,
+  `anterior` datetime NOT NULL,
+  `posterior` datetime NOT NULL,
+  `comentario` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `estado` (`estado`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;";
         if ($conn->query($query) != TRUE) {
             $conn->rollback();
             $mensaje = "Error al crear la tabla cambios";
             include "creaconfig.php";
             exit();
         }
-        $query = "CREATE TABLE IF NOT EXISTS `mensajes` ( `msg_id` int(11) NOT NULL AUTO_INCREMENT, `estado` int(11) NOT NULL, `de` int(11) NOT NULL, `para` int(11) NOT NULL, `texto` text NOT NULL, PRIMARY KEY (`msg_id`), KEY `para_estado` (`para`,`estado`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;";
+        $query = "CREATE TABLE IF NOT EXISTS `empleados` (
+  `user_id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(32) NOT NULL,
+  `nombre` varchar(64) NOT NULL,
+  `password` varchar(64) NOT NULL,
+  `NIF` varchar(16) NOT NULL,
+  `email` varchar(64) NOT NULL,
+  `dentro` tinyint(1) NOT NULL DEFAULT 0,
+  `role` int(11) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`user_id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `NIF` (`NIF`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;";
+        if ($conn->query($query) != TRUE) {
+            $conn->rollback();
+            $mensaje = "Error al crear la tabla empleados";
+            include "creaconfig.php";
+            exit();
+        }
+        $query = "CREATE TABLE IF NOT EXISTS `mensajes` (
+  `msg_id` int(11) NOT NULL AUTO_INCREMENT,
+  `estado` int(11) NOT NULL DEFAULT 0,
+  `de` int(11) NOT NULL,
+  `para` int(11) NOT NULL,
+  `hora` datetime NOT NULL DEFAULT current_timestamp(),
+  `texto` text NOT NULL,
+  PRIMARY KEY (`msg_id`),
+  KEY `para_estado` (`para`,`estado`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;";
         if ($conn->query($query) != TRUE) {
             $conn->rollback();
             $mensaje = "Error al crear la tabla mensajes";
+            include "creaconfig.php";
+            exit();
+        }
+        $query = "CREATE TABLE IF NOT EXISTS `registros` (
+  `reg_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `reg_time` datetime NOT NULL DEFAULT current_timestamp(),
+  `entrada` tinyint(1) NOT NULL,
+  `IP` varchar(16) NOT NULL,
+  `location` varchar(64) NOT NULL,
+  `creado` datetime NOT NULL DEFAULT current_timestamp(),
+  `modificado` datetime DEFAULT NULL,
+  PRIMARY KEY (`reg_id`),
+  KEY `user_id` (`user_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;";
+        if ($conn->query($query) != TRUE) {
+            $conn->rollback();
+            $mensaje = "Error al crear la tabla registros";
             include "creaconfig.php";
             exit();
         }
@@ -505,6 +555,39 @@ function crearconfiguracion(){
         $mensaje = "No se pudo crear las tablas de datos, consulte al administrador web. " . $e->getMessage();
         include "creaconfig.php";
         exit();
+    }
+}
+
+function edit_config() {
+    global $conn;
+    global $mensaje;
+    global $logo;
+
+    $nombreempresa = mysqli_real_escape_string($conn, $_POST['nombreempresa']);
+    $nifempresa = mysqli_real_escape_string($conn, $_POST['nifempresa']);
+    $bloquetiempo = mysqli_real_escape_string($conn, $_POST['bloquetiempo']);
+    if ($_FILES['logopic']['size'] > 0) {
+        $target_dir = "uploads/";
+        $target_file = $target_dir . basename($_FILES['logopic']['name']);
+        if (move_uploaded_file($_FILES['logopic']['tmp_name'], $target_file)) {
+            $logo = basename($_FILES['logopic']['name']);
+        } else {
+            $mensaje = "Error al subir el archivo.";
+            return false;
+        }
+    }
+    try {
+        $fichero = fopen("usr_config.php", "w");
+        fwrite($fichero, "<?php\n");
+        fwrite($fichero, "\$nombreempresa = '$nombreempresa';\n");
+        fwrite($fichero, "\$nifempresa = '$nifempresa';\n");
+        fwrite($fichero, "\$bloquetiempo = $bloquetiempo;\n");
+        fwrite($fichero, "\$logo = '$logo';\n");
+        fclose($fichero);
+        return true;
+    } catch (Exception $e) {
+        $mensaje = "No se pudo guardar la configuración, consulte al administrador web. " . $e->getMessage();
+        return false;
     }
 }
 
@@ -594,14 +677,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (isset($_POST['rechazar_cambio'])) {
         rechazarCambio($_POST['rechazar_cambio']);
         include "cambios.php";
+    } elseif (isset($_POST['ver_reg'])) {
+        include "verreg.php";
+    } elseif (isset($_POST['ed_config'])) {
+        include "ed_config.php";
+    } elseif (isset($_POST['new_conf'])) {
+        if (edit_config()) {
+            include "dashboard.php";
+        } else {
+            include "ed_config.php";
+        }
     } elseif (isset($_POST['logout'])) {
         session_destroy();
         include "login.php";
     } elseif (isset($_POST['crearconfig'])) {
         crearconfiguracion();
         include "login.php";
-    } elseif (isset($_POST['ver_reg'])) {
-        include "verreg.php";
     } else {
         echo "Solicitud no válida.<br />\n";
         print_r($_POST);

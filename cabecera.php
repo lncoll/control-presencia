@@ -64,6 +64,12 @@ try {
             <form method="post">
                 <button type="submit" name="dashboard">Inicio</button>
 <?php
+if ($mensajes_pend) {
+    echo "                <button type='submit' name='mensajes'>Mensajes $mensajes_pend <img src='img/aviso.gif' width='16'></button>\n";
+} else {
+    echo '                <button type="submit" name="mensajes">Mensajes</button>\n';
+}
+echo '                <button type="submit" name="editame">Mis datos</button>\n';
 // Opciones de administrador
 if ($_SESSION['role'] == 10) {
     echo '                <button type="submit" name="crear">Crear usuario</button>
@@ -73,14 +79,9 @@ if ($_SESSION['role'] == 10) {
     } else {
         echo '<button type="submit" name="cambios">Solicitudes de cambio</button>\n';
     }
-}
-if ($mensajes_pend) {
-    echo "<button type='submit' name='mensajes'>Mensajes $mensajes_pend <img src='img/aviso.gif' width='16'></button>\n";
-} else {
-    echo '<button type="submit" name="mensajes">Mensajes</button>\n';
+    echo '<button type="submit" name="ed_config">Configuración</button>\n';
 }
 ?>
-                <button type="submit" name="editame">Mis datos</button>
                 <button type="submit" name="logout">Salir</button>
             </form>
         </div>
