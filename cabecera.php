@@ -53,40 +53,44 @@ try {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="estilo.css" rel="stylesheet" type="text/css"> 
-        <title><?= htmlspecialchars($titulo, ENT_QUOTES, 'UTF-8') ?></title>
+        <title><?= $titulo ?></title>
         <link rel="stylesheet" href="/js/leaflet/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
         <script src="/js/leaflet/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     </head>
     <body>
         <div id="page-container">
-        <div id="content-wrap">
-        <div class="navbar">
-            <form method="post">
-                <button type="submit" name="dashboard">Inicio</button>
+            <div id="content-wrap">
+                <section class="top-nav">
+                    <div><?= $nombreempresa ?></div>
+                    <input id="menu-toggle" type="checkbox">
+                    <label class='menu-button-container' for="menu-toggle">
+                        <div class='menu-button'></div>
+                    </label>
+                    <ul class="menu">
+                        <li><form method="post"><button type='submit' name='dashboard'>inicio</button></form></li>
 <?php
 if ($mensajes_pend) {
-    echo "                <button type='submit' name='mensajes'>Mensajes $mensajes_pend <img src='img/aviso.gif' width='16'></button>\n";
+    echo "                        <li><form><button type='submit' name='mensajes'>Mensajes $mensajes_pend <img src='img/aviso.gif' width='16'></button></form></li>\n";
 } else {
-    echo '                <button type="submit" name="mensajes">Mensajes</button>\n';
+    echo "                <li><form><button type='submit' name='mensajes'>Mensajes</button></form></li>\n";
 }
-echo '                <button type="submit" name="editame">Mis datos</button>\n';
+echo "                <li><form><button type='submit' name='editame'>Mis datos</button></form></li>\n";
 // Opciones de administrador
 if ($_SESSION['role'] == 10) {
-    echo '                <button type="submit" name="crear">Crear usuario</button>
-                <button type="submit" name="users">Usuarios</button>\n';
+    echo "                <li><form><button type='submit' name='crear'>Crear usuario</button></form></li>
+                <li><form><button type='submit' name='users'>Usuarios</button></form></li>\n";
     if ($cambios_pend) {
-        echo "<button type='submit' name='cambios'>Solicitudes de cambio $cambios_pend <img src='img/aviso.gif' width='16'></button>\n";
+        echo "<li><form><button type='submit' name='cambios'>Solicitudes de cambio $cambios_pend <img src='img/aviso.gif' width='16'></button></form></li>\n";
     } else {
-        echo '<button type="submit" name="cambios">Solicitudes de cambio</button>\n';
+        echo "<li><form><button type='submit' name='cambios'>Solicitudes de cambio</button></form></li>\n";
     }
-    echo '<button type="submit" name="ed_config">Configuración</button>\n';
+    echo "<li><form><button type='submit' name='ed_config'>Configuración</button></form></li>\n";
 }
 ?>
-                <button type="submit" name="logout">Salir</button>
-            </form>
-        </div>
+                        <li><form><button type="submit" name="logout">Salir</button></form></li>
+                    </ul>
+                </section>
 <?php
 if (isset($mensaje)) {
     echo "<h2 id='mensaje'>" . htmlspecialchars($mensaje, ENT_QUOTES, 'UTF-8') . "</h2>\n";
 }
-?>
