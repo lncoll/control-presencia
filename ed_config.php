@@ -34,8 +34,8 @@ include 'cabecera.php';
                 <option value="30" <?php if ($bloquetiempo === 30) echo "selected"; ?>>30 minutos</option>
             </select>
             <img src="uploads/<?= $logo ?>" width="260" title="Logotipo" />
-            <label for="logopic">Logo</label>
-            <input type="hidden" name="MAX_FILE_SIZE" value="30000" />
+            <label for="logopic">Logo: max. 32 KB. jpg o png</label>
+            <input type="hidden" name="MAX_FILE_SIZE" value="35625" />
             <input type="file" name="logopic" accept=".png,.jpg" />
             <br />
             <button type="submit" name="new_conf">Guardar</button>

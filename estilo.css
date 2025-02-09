@@ -238,8 +238,6 @@ html, body {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   width: 300px;
   margin: 0 auto;
-/*    margin-bottom: 20px;*/
-/*    display: inline-block;*/
 }
 
 .reg-form button[type="submit"] {
@@ -457,7 +455,7 @@ html, body {
     padding: 0.5em 0;
     width: 100%;
     color: white;
-    background-color: #222;
+    background-color: #333;
   }
   .menu > li:not(:last-child) {
     border-bottom: 1px solid #444;

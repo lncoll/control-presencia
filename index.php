@@ -90,7 +90,7 @@ function registerExit($user_id) {
     $hora = new DateTime('now');
     $hora = $hora->format("Y-m-d H:i");
     $IP = $_SERVER['REMOTE_ADDR'];
-    $location = $_POST['latitud'] . ", " . $_POST['longitud'];
+    $location = $_POST['latitud'] . "|" . $_POST['longitud'];
     try {
         $conn->begin_transaction();
         $query = "INSERT INTO registros (user_id, reg_time, entrada, IP, location, creado) VALUES ($user_id, NOW(), FALSE, '$IP', '$location', NOW())";
@@ -466,7 +466,7 @@ function crearconfiguracion(){
         exit();
     }
 
-    try {  /// Actualizar la creación de tablas
+    try {
         $conn->set_charset("utf8mb4");
         $conn->autocommit(FALSE);
         $conn->begin_transaction();
