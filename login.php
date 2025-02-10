@@ -12,7 +12,8 @@
 <?php
 if (isset($mensaje)) echo "        <h2 id='mensaje'>" . $mensaje . "</h2><br />";
 ?>
-            <h2><?= $nombreempresa ?></h2>
+            <img src="uploads/<?= $logo ?>" alt="Logo" width="250">
+            <h2>Acceso a <?= $nombreempresa ?></h2>
             <label for="username">Usuario</label>
             <input type="text" name="username" placeholder="Username" required>
             <label for="password">Contraseña</label>
