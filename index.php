@@ -91,9 +91,12 @@ function registerExit($user_id) {
     $hora = $hora->format("Y-m-d H:i");
     $IP = $_SERVER['REMOTE_ADDR'];
     $location = $_POST['latitud'] . "|" . $_POST['longitud'];
+    $momento = new DateTime(NULL, new DateTimeZone('UTC'));
+    $momento->setTimezone(new DateTimeZone($_POST['timezone']));
+    $hora = $momento->format("Y-m-d H:i");
     try {
         $conn->begin_transaction();
-        $query = "INSERT INTO registros (user_id, reg_time, entrada, IP, location, creado) VALUES ($user_id, NOW(), FALSE, '$IP', '$location', NOW())";
+        $query = "INSERT INTO registros (user_id, reg_time, entrada, IP, location, creado) VALUES ($user_id, '$hora', FALSE, '$IP', '$location', '$hora')";
         if ($conn->query($query) === TRUE) {
             $query = "UPDATE empleados SET dentro = 0 WHERE user_id = $user_id";
             if ($conn->query($query) === TRUE) {
@@ -240,16 +243,27 @@ function editReg($reg_id, $fecha, $hora, $razon) {
         return false;
     }
 
-// comprobar que la nueva fecha no esté en el futuro
-    $new = strtotime($nuevotiempo  );
-    if ($new > time()) {
+    // comprobar que la nueva fecha no esté en el futuro
+    // Set the timezone
+    $timezone = new DateTimeZone($_POST['timezone']);
+
+    // Get the current time with the defined timezone
+    $current_time = new DateTime('now', $timezone);
+
+    // Convert the new time to the defined timezone
+    $new_time = new DateTime($nuevotiempo, $timezone);
+
+    if ($new_time > $current_time) {
         $mensaje = "No puedes seleccionar un momento futuro.";
         $conn->rollback();
         return false;
     }
+    // Reset the timezone to UTC
+    ini_set('date.timezone', 'UTC');
 
 // comprobar si la nueva hora solapa con periodo anterior o posterior
     $old = strtotime($tiempoviejo);
+    $new = strtotime($nuevotiempo);
     if ($old < $new) {
         $query = "SELECT reg_id, reg_time FROM registros WHERE user_id = " . $_SESSION['user_id'] . " AND reg_time BETWEEN '$tiempoviejo' AND '$nuevotiempo' ORDER BY reg_time ASC";
         $periodo = "posterior";

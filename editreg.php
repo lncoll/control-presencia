@@ -44,6 +44,7 @@ if ($entrada) {
 }
 ?>        
         <form method="post" class="ereg-form">
+            <p id="timezone"></p>
             <label for="fecha">Fecha:</label>
             <input type="date" name="fecha" value="<?= $fecha ?>" required>
             <label for="hora">Hora:</label>
@@ -54,5 +55,9 @@ if ($entrada) {
             <br />
             <button type="submit" name="modifica" value="<?= $_POST['editareg'] ?>">Solicitar modificación</button>
         </form>
+        <script>
+            var x = document.getElementById('timezone');
+            x.innerHTML = "<input type='hidden' name='timezone' value='" + Intl.DateTimeFormat().resolvedOptions().timeZone + "'>";
+        </script>
 <?php
 include 'pie.php';
