@@ -51,7 +51,7 @@ if ($entrada) {
             <input type="time" name="hora" value="<?= $hora ?>" required>
             <br />
             <label for="razon">Justificación:</label>
-            <textarea name="razon" rows="4" cols="55" placeholder="Causa de la modificación" required></textarea>
+            <textarea name="razon" rows="4" cols="50" placeholder="Causa de la modificación" required></textarea>
             <br />
             <button type="submit" name="modifica" value="<?= $_POST['editareg'] ?>">Solicitar modificación</button>
         </form>

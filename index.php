@@ -52,8 +52,10 @@ function registerEntry($user_id) {
     }
     $IP = $_SERVER['REMOTE_ADDR'];
     $location = $_POST['latitud'] . "|" . $_POST['longitud'];
+    $timezone = getTimezoneFromLocation($_POST['latitud'], $_POST['longitud'], time());
+    if (!$timezone) $timezone = $_POST['timezone'];
     $momento = new DateTime(NULL, new DateTimeZone('UTC'));
-    $momento->setTimezone(new DateTimeZone($_POST['timezone']));
+    $momento->setTimezone(new DateTimeZone($timezone));
     $hora = $momento->format("Y-m-d H:i");
     try {
         $conn->begin_transaction();
@@ -91,6 +93,8 @@ function registerExit($user_id) {
     $hora = $hora->format("Y-m-d H:i");
     $IP = $_SERVER['REMOTE_ADDR'];
     $location = $_POST['latitud'] . "|" . $_POST['longitud'];
+    $timezone = getTimezoneFromLocation($_POST['latitud'], $_POST['longitud'], time());
+    if (!$timezone) $timezone = $_POST['timezone'];
     $momento = new DateTime(NULL, new DateTimeZone('UTC'));
     $momento->setTimezone(new DateTimeZone($_POST['timezone']));
     $hora = $momento->format("Y-m-d H:i");

@@ -35,6 +35,7 @@ try {
 $titulo = "Listado de usuarios";
 include 'cabecera.php';
 ?>
+        <br />
         <form method="post" class="busca-form">
             Filtrar busqueda por: 
             <input type="text" name="users" placeholder="Nombre a buscar">
@@ -47,7 +48,12 @@ include 'cabecera.php';
 
             <button type="submit">Filtrar</button>
         </form>
+        <br />
         <h1>Listado de usuarios</h1>
+        <form method='post' class='reg-form'>
+            <button type='submit' name='crear'>Crear usuario</button>
+        </form>
+        <br />
 <?php
 if ($stmt_usr->num_rows > 0) {
     echo "<table class='tlistado'>

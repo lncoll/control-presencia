@@ -61,7 +61,7 @@ try {
                         $fecha = $sal->format('d/m/Y');
                         if ($ent) {
                             $tiempo = tiempostr($ent, $sal);
-                            echo "<tr><td>" . $fecha . "</td><td>" . $ent->format('H:i') . "</td><td><form method='post'><button class='btn' name='ver_reg'  value='".$ent_id."' title='Mapa' ><img src=img/mapa.png  alt='Mapa'  width='24'></button></form></td><td>" . $sal->format('H:i') . "</td><td><form method='post'><button class='btn' name='ver_reg'  value='".$reg_id."' title='Mapa' ><img src=img/mapa.png  alt='Mapa'  width='24'></button></form></td><td>" . $tiempo . "</td></tr>\n";
+                            echo "<tr><td>" . $fecha . "</td><td>" . $ent->format('H:i') . "</td><td><form method='post'><button class='btn' name='ver_reg'  value='".$ent_id."' title='Mapa' ><img src=img/mapa.png  alt='Mapa'  width='24'></button></form></td><td>" . $sal->format('H:i') . "</td><td><form method='post'><button class='btn' name='ver_reg'  value='".$reg_id."' title='Mapa' ><img src=img/mapa.png  alt='Mapa' width='24'></button></form></td><td>" . $tiempo . "</td></tr>\n";
                         } else
                             echo "<tr><td>" . $fecha . "</td><td>" . $ent->format('H:i') . "</td><td>---</td><td>---</td></tr>\n";                        
                     } else {

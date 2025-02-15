@@ -77,8 +77,7 @@ if ($mensajes_pend) {
 echo "                <li><form method='post'><button type='submit' name='editame'>Mis datos</button></form></li>\n";
 // Opciones de administrador
 if ($_SESSION['role'] == 10) {
-    echo "                <li><form method='post'><button type='submit' name='crear'>Crear usuario</button></form></li>
-                <li><form method='post'><button type='submit' name='users'>Usuarios</button></form></li>\n";
+    echo "                <li><form method='post'><button type='submit' name='users'>Usuarios</button></form></li>\n";
     if ($cambios_pend) {
         echo "<li><form method='post'><button type='submit' name='cambios'>Solicitudes de cambio $cambios_pend <img src='img/aviso.gif' width='16'></button></form></li>\n";
     } else {
