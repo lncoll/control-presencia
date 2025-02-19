@@ -87,14 +87,15 @@ $fin = $end->format('Y-m-d 23:59:59');
 
 // Generar un pdf con el listado de registros
 if (isset($_POST['pdf'])) {
+    // obtener datos del usuario
     $query = "SELECT nombre, NIF FROM empleados WHERE user_id = $busca_user;";
     $result = $conn->query($query);
     $row = $result->fetch_assoc();
     $nombre = $row['nombre'];
     $nif = $row['NIF'];
     $result->close();
-    $filename = $nombre . $end->format("-Y-m") . ".pdf";
-
+    $filename = iconv('UTF-8', 'windows-1252', $nombre) . $end->format("-Y-m") . ".pdf";
+    // Creación del pdf y asignar los datos de la cabecera
     $pdf = new LPDF();
     $pdf->_nombreempresa = iconv('UTF-8', 'windows-1252', $nombreempresa);
     $pdf->_nombre = iconv('UTF-8', 'windows-1252', $nombre);
@@ -108,7 +109,7 @@ if (isset($_POST['pdf'])) {
     $pdf->AliasNbPages();
     $pdf->AddPage();
     $pdf->SetFont('Arial','',12);
-
+    // Preparar listado de los registros
     $totalminutos = 0;
     $stmt_pdf = $conn->stmt_init();
     $stmt_pdf->prepare("SELECT reg_time, entrada FROM registros WHERE reg_time BETWEEN ? AND ? AND user_id = ? ORDER BY reg_id ASC;");
@@ -116,41 +117,54 @@ if (isset($_POST['pdf'])) {
     $stmt_pdf->execute();
     $stmt_pdf->bind_result($reg_time, $entrada);
     $stmt_pdf->store_result();
+    // Si no hay registros, indicarlo
     if ($stmt_pdf->num_rows == 0) {
         $pdf->SetY($pdf->GetY() + $altocelda);
         $pdf->SetX(40);
         $pdf->Cell(120, $altocelda, 'No hay registros', 1, 1, 'C');
     } else {
+        // Si hay registros mostrarlos
         while($row = $stmt_pdf->fetch()) {
-            if (!$entrada) {
-                $sal = new DateTime($reg_time);
-                $fecha = $sal->format('d/m/Y');
-                if ($ent) {
-                    $tiempo = tiempostr($ent, $sal);
-                    $lapso = $ent->diff($sal);
-                    $minutos = $lapso->days * 1440 + $lapso->h * 60 + $lapso->i;
-                    $minutos -= $minutos % $bloquetiempo;
-                    $totalminutos += $minutos;
-/*                    if ($lapso->days > 0) {
-                        $tiempo = sprintf("%dd %02d:%02d", floor($minutos/1440), floor($minutos/60), $minutos % 60);
-                    } else {
-                        $tiempo = sprintf("%02d:%02d", floor($minutos/60), $minutos % 60);
-                    } */
-                    $pdf->SetX(40); // Cell(30, $altocelda, '', 0, 0, 'C');
-                    $pdf->Cell(30, $altocelda, $fecha, 1, 0, 'C');
-                    $pdf->Cell(30, $altocelda, $ent->format('H:i'), 1, 0, 'C');
-                    $pdf->Cell(30, $altocelda, $sal->format('H:i'), 1, 0, 'C');
-                    $pdf->Cell(30, $altocelda, $tiempo, 1, 1, 'C');
-                } else {
-                    $pdf->Cell(15, $altocelda, '', 0, 0, 'C');
-                    $pdf->Cell(30, $altocelda, $fecha, 1, 0, 'C');
-                    $pdf->Cell(30, $altocelda, $ent->format('H:i'), 1, 0, 'C');
-                    $pdf->Cell(30, $altocelda, '---', 1, 0, 'C');
-                    $pdf->Cell(30, $altocelda, '---', 1, 1, 'C');
-                }
-            } else {
+            if ($entrada){
+                // Registro de entrada, guardamos fecha y hora
                 $ent = new DateTime($reg_time);
+                $fecha = $ent->format('d/m/Y');
+            } else {
+                // Registro de salida, generamos fila de la tabla
+                $sal = new DateTime($reg_time);
+                if (!isset($ent)) {
+                    // Si no hay entrada, buscar la última entrada anterior
+                    $query = "SELECT reg_time FROM registros WHERE reg_time < '$reg_time' AND entrada = 1 AND user_id = $busca_user ORDER BY reg_time DESC LIMIT 1;";
+                    $result = $conn->query($query);
+                    $row = $result->fetch_assoc();
+                    $ent = new DateTime($row['reg_time']);
+                    $result->close();
+                    $fecha = $ent->format('d/m/Y');
+                    $tiempo = tiempostr($ent, $sal);
+                }
+                $tiempo = tiempostr($ent, $sal);
+                $lapso = $ent->diff($sal);
+                $minutos = $lapso->days * 1440 + $lapso->h * 60 + $lapso->i;
+                $minutos -= $minutos % $bloquetiempo;
+                $totalminutos += $minutos;
+                $pdf->SetX(40); // Cell(30, $altocelda, '', 0, 0, 'C');
+                $pdf->Cell(30, $altocelda, $fecha, 1, 0, 'C');
+                $pdf->Cell(30, $altocelda, $ent->format('H:i'), 1, 0, 'C');
+                $pdf->Cell(30, $altocelda, $sal->format('H:i'), 1, 0, 'C');
+                $pdf->Cell(30, $altocelda, $tiempo, 1, 1, 'C');
+                unset($fecha);
+                unset($ent);
+                unset($sal);
             }
+        }
+        // Final del listado y hay entrada pero no hay salida
+        if (isset($ent)) {
+            $tiempo = "Sin salida";
+            $pdf->SetX(40);
+            $pdf->Cell(30, $altocelda, $fecha, 1, 0, 'C');
+            $pdf->Cell(30, $altocelda, $ent->format('H:i'), 1, 0, 'C');
+            $pdf->Cell(30, $altocelda, '---', 1, 0, 'C');
+            $pdf->Cell(30, $altocelda, '---', 1, 1, 'C');
         }
         $total = sprintf("%d:%02d", floor($totalminutos / 60), $totalminutos % 60);
         $pdf->Cell(30, $altocelda, '', 0, 1, 'C');
@@ -168,7 +182,7 @@ if (isset($_POST['pdf'])) {
         $pdf->Cell(30, 30, '', 0, 1, 'C');
         $pdf->SetX(40);  $pdf->Write($altocelda, 'Fecha:');
         $pdf->SetX(120); $pdf->Write($altocelda, "Fecha:\n");
+        $stmt_pdf->close();
+        $pdf->Output('D', $filename);
     }
-    $stmt_pdf->close();
-    $pdf->Output('D', $filename);
 }

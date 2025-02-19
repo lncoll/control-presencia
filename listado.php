@@ -56,18 +56,33 @@ try {
 <?php
             if ($stmt_lis->num_rows > 0) {
                 while($row = $stmt_lis->fetch()) {
-                    if (!$entrada) {
-                        $sal = new DateTime($reg_time);
-                        $fecha = $sal->format('d/m/Y');
-                        if ($ent) {
-                            $tiempo = tiempostr($ent, $sal);
-                            echo "<tr><td>" . $fecha . "</td><td>" . $ent->format('H:i') . "</td><td><form method='post'><button class='btn' name='ver_reg'  value='".$ent_id."' title='Mapa' ><img src=img/mapa.png  alt='Mapa'  width='24'></button></form></td><td>" . $sal->format('H:i') . "</td><td><form method='post'><button class='btn' name='ver_reg'  value='".$reg_id."' title='Mapa' ><img src=img/mapa.png  alt='Mapa' width='24'></button></form></td><td>" . $tiempo . "</td></tr>\n";
-                        } else
-                            echo "<tr><td>" . $fecha . "</td><td>" . $ent->format('H:i') . "</td><td>---</td><td>---</td></tr>\n";                        
-                    } else {
+                    if ($entrada){
                         $ent = new DateTime($reg_time);
+                        $fecha = $ent->format('d/m/Y');
                         $ent_id = $reg_id;
+                    } else {
+                        $sal = new DateTime($reg_time);
+                        $sal_id = $reg_id;
+                        if (!isset($ent)) {
+                            $query = "SELECT reg_id, reg_time FROM registros WHERE reg_time < '$reg_time' AND entrada = 1 AND user_id = $busca_user ORDER BY reg_time DESC LIMIT 1;";
+                            $result = $conn->query($query);
+                            $row = $result->fetch_assoc();
+                            $ent_id = $row['reg_id'];
+                            $ent = new DateTime($row['reg_time']);
+                            $fecha = $ent->format('d/m/Y');
+                            $result->close();
+                            $tiempo = tiempostr($ent, $sal);
+                        }
+                        $tiempo = tiempostr($ent, $sal);
+                        echo "<tr><td>" . $fecha . "</td><td>" . $ent->format('H:i') . "</td><td><form method='post'><button class='btn' name='ver_reg'  value='".$ent_id."' title='Mapa' ><img src=img/mapa.png  alt='Mapa'  width='24'></button></form></td><td>" . $sal->format('H:i') . "</td><td><form method='post'><button class='btn' name='ver_reg'  value='".$reg_id."' title='Mapa' ><img src=img/mapa.png  alt='Mapa' width='24'></button></form></td><td>" . $tiempo . "</td></tr>\n";
+                        unset($fecha);
+                        unset($ent);
+                        unset($sal);
                     }
+                }
+                if (isset($ent)) {
+                    $tiempo = "Sin salida";
+                    echo "<tr><td>" . $fecha . "</td><td>" . $ent->format('H:i') . "</td><td><form method='post'><button class='btn' name='ver_reg'  value='".$ent_id."' title='Mapa' ><img src=img/mapa.png  alt='Mapa'  width='24'></button></form></td><td>---</td><td>---</td><td>" . $tiempo . "</td></tr>\n";
                 }
             } else {
                 echo "<tr><td colspan='6'>No hay registros</td></tr>";
