@@ -1,4 +1,5 @@
 <?php
+require __DIR__ . '/vendor/autoload.php';
 include_once 'sys_config.php';
 include_once 'usr_config.php';
 

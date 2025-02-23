@@ -54,8 +54,8 @@ try {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="estilo.css" rel="stylesheet" type="text/css"> 
         <title><?= $titulo ?></title>
-        <link rel="stylesheet" href="/js/leaflet/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-        <script src="/js/leaflet/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+        <link rel="stylesheet" href="/vendor/drmonty/leaflet/css/leaflet.css" integrity="sha256-zzLDQJFTJjbSREumbe+RgjzRnjf63nHC8CKylTFfnus=" crossorigin=""/>
+        <script src="/vendor/drmonty/leaflet/js/leaflet.js" integrity="sha256-YdNCj7T6LHY9eEGeJxzeBTeujq54SQTu5Eqow2akZsk=" crossorigin=""></script>
     </head>
     <body>
         <div id="page-container">

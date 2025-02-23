@@ -1,0 +1,22 @@
+{
+    "name": "lncoll/control-presencia",
+    "description": "Aplicación para registrar la presencia de empleados en la empresa (fichar)",
+    "type": "project",
+    "require": {
+        "fpdf/fpdf": "^1.86",
+        "drmonty/leaflet": "^1.9"
+    },
+    "license": "GPL3",
+    "autoload": {
+        "psr-4": {
+            "Lncoll\\ControlPresencia\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "lncoll",
+            "email": "luis@algarroba.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}

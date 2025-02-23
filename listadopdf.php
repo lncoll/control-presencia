@@ -1,6 +1,6 @@
 <?php
 include_once 'global.php';
-require('fpdf186/fpdf.php');
+use Fpdf\Fpdf;
 
 // Iniciar sesión si no está iniciada
 if (session_status() == PHP_SESSION_NONE) {
@@ -13,7 +13,7 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-class LPDF extends FPDF {
+class LPDF extends Fpdf {
     // Variables a pasar a la clase
     public $_nombreempresa;
     public $_nombre;

@@ -47,7 +47,7 @@ if (isset($_POST['crearconfig'])) {
                     <h2>Empresa</h2>
                     <label for="nombreempresa">Nombre</label>
                     <input type="text" name="nombreempresa" value="<?= $nombreempresa ?>" required>
-                    <label for="nifempresa">Nombre</label>
+                    <label for="nifempresa">NIF</label>
                     <input type="text" name="nifempresa" value="<?= $nifempresa ?>" required>
                     <hr>
                     <h2>Crear Administrador</h2>
